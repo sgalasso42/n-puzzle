@@ -1,34 +1,49 @@
 use std::env;
-use std::fs;
-use std::io::{self, BufReader};
+use std::io::{BufReader};
 use std::io::prelude::*;
 use std::fs::File;
 
+#[derive(Debug)]
+enum Dir {
+	N, E, S, W
+}
 
 struct Node {
-	state: Vec<Vec<i32>>
+	state: Vec<i32>
 }
 
 impl Node {
 	fn new(size: usize, values: Vec<i32>) -> Node {
 		Node {
-			state: (0..size).map(|_y| (0..size).map(|_x| values[(_y * size) + _x]).collect()).collect(),
+			state: values,
 		}
 	}
 }
 
-// fn parse_input(contents: String) -> Vec<i64> {
-// 	let mut input_line = String::new();
-// 	contents.read_line(&mut input_line).unwrap();
-// 	let size = input_line[0]; // to secure
+/* ## FUNCTIONS ################################################################################ */
 
-// 	let values = Vec::new();
-// 	for i in 0..size as usize {
-// 			let mut input_line = String::new();
-// 			contents.read_line(&mut input_line).unwrap();
-// 			let inputs = input_line.split(" ").collect::<Vec<_>>();
-// 			values.push(inputs[i]);
+fn target(w: i32, h: i32, x: i32, y: i32) -> i32 {
+	return if y != 0 { w + target(h - 1, w, y - 1, w - x - 1) } else { x + 1 };
+}
+
+// fn isCompleted() {
+
+// }
+
+// fn get_neighbors() {
+	
+// }
+
+// fn graph_search(node: Node, sequence: Vec<Dir>) -> Vec<Dir> {
+// 	if isCompleted(node.state) {
+// 		return sequence;	
 // 	}
+// 	let neighbors = get_neighbors();
+// 	for neighbour in neighbors {
+// 		graph_search(node, sequence);
+// 	}
+// 	sequence.pop();
+// 	return sequence;
 // }
 
 fn load_file(args: &[String]) -> Vec<i32> {
@@ -47,11 +62,26 @@ fn load_file(args: &[String]) -> Vec<i32> {
 
 fn main() {
 	let args: Vec<String> = env::args().collect();
-	let mut values: Vec<i32> = load_file(&args); // parsing security + commentary #
+	let values: Vec<i32> = load_file(&args); // parsing security + commentary #
 
-	println!("{:?}", values);
+	println!("values: {:?}", values);
 
-	let mut start_node: Node = Node::new(3, values);
+	let mut root: Node = Node::new(3, values);
 
-	println!("{:?}", start_node.state);
+	println!("root: {:?}", root.state);
+
+	// let mut sequence: Vec<Dir> = graph_search(root, Vec::new());
+
+	// println!("actions: {:?}", sequence);
+
+	let size = 3;
+
+	for i in 0..size {
+		for j in 0..size {
+			print!("{} ", target(size, size, j, i));
+		}
+		print!("\n");
+	}
+
+	// println("target: {:?}", target);
 }
