@@ -3,56 +3,79 @@ use std::io::{BufReader};
 use std::io::prelude::*;
 use std::fs::File;
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 enum Dir {
 	N, E, S, W
 }
 
 struct Node {
 	state: Vec<i32>,
-	checked: bool
+	// checked: bool
 }
 
 impl Node {
-	fn new(size: usize, values: Vec<i32>) -> Node {
+	fn new(values: Vec<i32>) -> Node {
 		Node {
 			state: values,
-			checked: false
+			// checked: false
 		}
 	}
 }
 
 /* ## FUNCTIONS ################################################################################ */
 
-fn is_same(size: i32, state: Vec<i32>, target: Vec<i32>) -> bool {
-	let matching = state.iter().zip(&target).filter(|&(state, target)| state == target).count();
+fn is_same(size: i32, state: &Vec<i32>, target: &Vec<i32>) -> bool {
+	let matching = state.iter().zip(target).filter(|&(state, target)| state == target).count();
 	return matching == (size * size) as usize;
 }
 
-fn apply_action(state: Vec<i32>, dir: Dir) -> Vec<i32> {
-	// apply move relative to dir
+fn apply_action(_state: &Vec<i32>, _dir: &Dir) -> Vec<i32> {
+	// if dir == Dir::N {
+	// 	if  {
+	// 		state.swap(0, 2);
+	// 		return Ok(state);
+	// 	}
+	// } else if dir == Dir::E {
+	// 	if {
+	// 		state.swap(0, 2);
+	// 		return Ok(state);
+	// 	}
+	// } else if dir == Dir::S {
+	// 	if {
+	// 		state.swap(0, 2);
+	// 		return Ok(state);
+	// 	}
+	// } else {
+	// 	if {
+	// 		state.swap(0, 2);
+	// 		return Ok(state);
+	// 	}
+	// }
+	return Vec::new();
 }
 
-fn get_neighbors() {
+fn get_neighbors(state: Vec<i32>) -> Vec<Node> {
+	let directions = [Dir::N, Dir::E, Dir::S, Dir::W];
 	let mut neighbors: Vec<Node> = Vec::new();
-	for dir in Dir {
-		let result = apply_action(state, dir);
-		if Ok(result) && !is_same(result, sequence.last())  {
-			neighbors.push(result);
-		}
+	for dir in directions.iter() {
+		let result = apply_action(&state, dir);
+		// if Ok(result) && !is_same(result, sequence.last())  {
+			neighbors.push(Node::new(result));
+		// }
 	}
+	return neighbors;
 }
 
-fn graph_search(size: i32, node: Node, target: Vec<i32>, sequence: Vec<Dir>) -> Vec<Dir> {
-	if is_same(size, node.state, target) {
-		return sequence;
+fn graph_search(size: i32, node: Node, target: &Vec<i32>, sequence: &mut Vec<Dir>) -> Vec<Dir> {
+	if is_same(size, &node.state, target) {
+		return sequence.to_vec();
 	}
-	let neighbors = get_neighbors();
+	let neighbors = get_neighbors(node.state);
 	for neighbour in neighbors {
-		graph_search(size, node, target, sequence);
+		graph_search(size, neighbour, &target, sequence);
 	}
 	sequence.pop();
-	return sequence;
+	return sequence.to_vec();
 }
 
 fn snail(w: i32, h: i32, x: i32, y: i32) -> i32 {
@@ -74,7 +97,7 @@ fn snail_generate(size: i32) -> Vec<i32> {
 }
 
 fn load_file(args: &[String]) -> (i32, Vec<i32>) {
-	if (args.len() != 2) {
+	if args.len() != 2 {
 		panic!("error: bad args number")
 	}
 	let file = File::open(&args[1]).expect("error: file not found");
@@ -95,7 +118,7 @@ fn load_file(args: &[String]) -> (i32, Vec<i32>) {
 		}
 	}
 	// if size * size != value.len => error
-	// handle commentary #
+	// handle comments #
 	return (size, values);
 }
 
@@ -103,12 +126,12 @@ fn main() {
 	let args: Vec<String> = env::args().collect();
 	let (size, values) = load_file(&args);
 
-	let mut root: Node = Node::new(size as usize, values);
+	let root: Node = Node::new(values);
 	println!("root: {:?}", root.state);
 
 	let target = snail_generate(size);
 	println!("target: {:?}", target);
 
-	let mut sequence: Vec<Dir> = graph_search(size, root, target, Vec::new());
+	let sequence: Vec<Dir> = graph_search(size, root, &target, &mut Vec::new());
 	println!("sequence: {:?}", sequence);
 }
