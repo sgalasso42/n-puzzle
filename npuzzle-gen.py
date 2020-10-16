@@ -6,8 +6,6 @@ import random
 
 def make_puzzle(s, solvable, iterations):
 	def swap_empty(p):
-		print(p)
-		print(p.index(0))
 		idx = p.index(0)
 		poss = []
 		if idx % s > 0:
@@ -18,7 +16,6 @@ def make_puzzle(s, solvable, iterations):
 			poss.append(idx - s)
 		if idx / s < s - 1:
 			poss.append(idx + s)
-		print(poss)
 		swi = random.choice(poss)
 		p[idx] = p[swi]
 		p[swi] = 0
