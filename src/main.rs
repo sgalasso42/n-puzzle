@@ -2,6 +2,7 @@ use std::env;
 use std::io::{BufReader};
 use std::io::prelude::*;
 use std::fs::File;
+#[path = "board/board.rs"] mod board;
 
 #[derive(Debug, Copy, Clone)]
 enum Dir {
@@ -149,9 +150,20 @@ fn load_file(args: &[String]) -> (i32, Vec<i32>) {
 
 fn main() {
 	let args: Vec<String> = env::args().collect();
-	let (size, state) = load_file(&args);
 
-	println!("root: {:?}", state);
+	if args.len() > 1 && args[1] == "--create" {
+		let board = board::create_board(&args[2]);
+			println!("board: {:?}", board);
+
+	}
+
+	let (size, values) = load_file(&args);
+
+	let is_solvable: bool = board::is_solvable(size, values.clone());
+	println!("is_solvable: {:?}", is_solvable);
+
+	let root: Node = Node::new(values);
+	println!("root: {:?}", root.state);
 
 	let target = snail_generate(size);
 	println!("target: {:?}", target);
