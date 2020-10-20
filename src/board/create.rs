@@ -1,6 +1,11 @@
 use rand::seq::SliceRandom;
 
 pub fn create_solved_board(s: i32) -> Vec<i32> {
+	/*
+	* SHOULD use snail_generate
+	* Creates a solved board
+	* @return the generated solved board
+	*/
 	let mut board: Vec<i32> = Vec::new();
 	let mut i: i32 = 0;
 
@@ -41,6 +46,10 @@ pub fn create_solved_board(s: i32) -> Vec<i32> {
 }
 
 pub fn create_game_board(size: &String, iterations: i32) -> (i32, Vec<i32>) {
+	/*
+	* Creates a game board
+	* @return the generated game board
+	*/
 	let s: i32 = size.parse().unwrap_or(0);
 	let mut board: Vec<i32> = create_solved_board(s);
 	
@@ -77,6 +86,10 @@ pub fn create_game_board(size: &String, iterations: i32) -> (i32, Vec<i32>) {
 }
 
 pub fn create_fake_board(board:Vec<i32>, size:i32) -> Vec<i32> {
+	/*
+	* Creates a solved board as in the traditional game
+	* @return the generated solved board
+	*/
 	let mut base:Vec<i32> = Vec::new();
 	let mut fake_board:Vec<i32> = Vec::new();
 	for i in 0..(size * size) {

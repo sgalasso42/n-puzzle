@@ -166,6 +166,10 @@ fn main() {
 	let is_solvable: bool = check::is_solvable(size, values.clone());
 	println!("is_solvable: {:?}", is_solvable);
 
+	if !is_solvable {
+		panic!("error: puzzle not solvable")
+	}
+
 	let root: Node = Node::new(values);
 	println!("root: {:?}", root.state);
 
