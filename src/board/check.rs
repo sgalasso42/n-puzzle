@@ -73,8 +73,8 @@ pub fn is_solvable(size: i32, board:Vec<i32>) -> bool {
 	// Check and rewrite empty tile -> needs to be 0
 	let my_board: Vec<i32> = rewrite_max_value(board.clone(), size);
 	// Get nb of inversions for board and result
-	let mut inv_board: i32 = get_inversion_count(my_board.clone(), size);
-	let mut inv_solved: i32 = get_inversion_count(solved_board.clone(), size);
+	let inv_board: i32 = get_inversion_count(my_board.clone(), size);
+	let inv_solved: i32 = get_inversion_count(solved_board.clone(), size);
 	
 	if size % 2 != 0 {
 		return inv_board % 2 == inv_solved % 2
@@ -90,5 +90,4 @@ pub fn is_solvable(size: i32, board:Vec<i32>) -> bool {
 			return inv_board % 2 == inv_solved % 2;
 		}
 	}
-	return false;
 }

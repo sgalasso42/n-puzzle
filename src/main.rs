@@ -3,8 +3,9 @@ use std::io::{BufReader};
 use std::io::prelude::*;
 use std::fs::File;
 
-#[path = "board/create.rs"] mod create;
-#[path = "board/check.rs"] mod check;
+mod board;
+use board::create::*;
+use board::check::*;
 
 #[derive(Debug, Copy, Clone)]
 enum Dir {
@@ -155,7 +156,7 @@ fn main() {
 
 	let (size, values) = 
 	if args.len() > 1 && args[1] == "--create" {
-		create::create_game_board(&args[2], 1000)
+		create_game_board(&args[2], 1000)
 	} else {
 		load_file(&args)
 	};
@@ -163,7 +164,7 @@ fn main() {
 	println!("values: {:?}", values);
 	println!("size: {:?}", size);
 
-	let is_solvable: bool = check::is_solvable(size, values.clone());
+	let is_solvable: bool = is_solvable(size, values.clone());
 	println!("is_solvable: {:?}", is_solvable);
 
 	if !is_solvable {

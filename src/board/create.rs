@@ -90,7 +90,6 @@ pub fn create_fake_board(board:Vec<i32>, size:i32) -> Vec<i32> {
 	* Creates a solved board as in the traditional game
 	* @return the generated solved board
 	*/
-	let mut base:Vec<i32> = Vec::new();
 	let mut fake_board:Vec<i32> = Vec::new();
 	for i in 0..(size * size) {
 		fake_board.push(i + 1 as i32);
