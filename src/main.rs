@@ -8,69 +8,77 @@ enum Dir {
 	N, E, S, W
 }
 
+#[derive(Debug)]
 struct Node {
 	state: Vec<i32>,
-	// checked: bool
 }
 
 impl Node {
 	fn new(values: Vec<i32>) -> Node {
 		Node {
 			state: values,
-			// checked: false
 		}
 	}
 }
 
-/* ## FUNCTIONS ################################################################################ */
+// convert position from single dimension to double dimensions array
+fn fstod(index: usize, width: usize) -> (usize, usize) {
+	return (index % width, index / width);
+}
 
+// convert position from double dimensions to single dimension array
+fn fdtos(x: usize, y: usize, width: usize) -> usize {
+	return y * width + x;
+}
+
+// cmp of two array
 fn is_same(size: i32, state: &Vec<i32>, target: &Vec<i32>) -> bool {
 	let matching = state.iter().zip(target).filter(|&(state, target)| state == target).count();
 	return matching == (size * size) as usize;
 }
 
-fn apply_action(_state: &Vec<i32>, _dir: &Dir) -> Vec<i32> {
-	// if dir == Dir::N {
-	// 	if  {
-	// 		state.swap(0, 2);
-	// 		return Ok(state);
-	// 	}
-	// } else if dir == Dir::E {
-	// 	if {
-	// 		state.swap(0, 2);
-	// 		return Ok(state);
-	// 	}
-	// } else if dir == Dir::S {
-	// 	if {
-	// 		state.swap(0, 2);
-	// 		return Ok(state);
-	// 	}
-	// } else {
-	// 	if {
-	// 		state.swap(0, 2);
-	// 		return Ok(state);
-	// 	}
-	// }
-	return Vec::new();
+// define new position
+fn new_position(dir: &Dir) -> (i32, i32) {
+	return match dir {
+		Dir::N => (0, -1),
+		Dir::E => (1, 0),
+		Dir::S => (0, 1),
+		Dir::W => (-1, 0)
+	}
 }
 
-fn get_neighbors(state: Vec<i32>) -> Vec<Node> {
-	let directions = [Dir::N, Dir::E, Dir::S, Dir::W];
+// moving the slot to get the new state
+fn apply_action(size: i32, state: &mut Vec<i32>, current_pos: (usize, usize), new_pos: (i32, i32)) -> Result<Vec<i32>, ()> {
+	let index_a = fdtos(current_pos.0, current_pos.1, size as usize);
+	let index_b = fdtos(new_pos.0 as usize, new_pos.1 as usize, size as usize);
+	if (0..(size * size)).contains(&(index_a as i32)) && (0..(size * size)).contains(&(index_b as i32)) {
+		state.swap(index_a, index_b);
+		return Ok(state.clone());
+	}
+	return Err(());
+}
+
+// find puzzle next possibilities
+fn get_neighbors(size: i32, mut state: Vec<i32>) -> Vec<Node> {
+	let sd_pos = state.iter().position(|&x| x == 0).unwrap_or(0); // single dimension position
+	let dd_pos = fstod(sd_pos, size as usize); // double dimension position
+	let positions = [Dir::N, Dir::E, Dir::S, Dir::W];
 	let mut neighbors: Vec<Node> = Vec::new();
-	for dir in directions.iter() {
-		let result = apply_action(&state, dir);
-		// if Ok(result) && !is_same(result, sequence.last())  {
-			neighbors.push(Node::new(result));
-		// }
+	for pos in positions.iter() {
+		let new_state = apply_action(size, &mut state, dd_pos, new_position(pos));
+		if new_state.is_ok() {
+			neighbors.push(Node::new(new_state.unwrap()));
+		}
 	}
 	return neighbors;
 }
 
+// recursive graph search
 fn graph_search(size: i32, node: Node, target: &Vec<i32>, sequence: &mut Vec<Dir>) -> Vec<Dir> {
 	if is_same(size, &node.state, target) {
 		return sequence.to_vec();
 	}
-	let neighbors = get_neighbors(node.state);
+	let neighbors = get_neighbors(size, node.state);
 	for neighbour in neighbors {
 		graph_search(size, neighbour, &target, sequence);
 	}
@@ -78,6 +86,7 @@ fn graph_search(size: i32, node: Node, target: &Vec<i32>, sequence: &mut Vec<Dir
 	return sequence.to_vec();
 }
 
+// give snail value for a given index
 fn snail(w: i32, h: i32, x: i32, y: i32) -> i32 {
 	return if y != 0 {
 		w + snail(h - 1, w, y - 1, w - x - 1)
@@ -86,6 +95,7 @@ fn snail(w: i32, h: i32, x: i32, y: i32) -> i32 {
 	};
 }
 
+// generate an snake organized array of a given size
 fn snail_generate(size: i32) -> Vec<i32> {
 	let mut target: Vec<i32> = Vec::new();
 	for y in 0..size {
