@@ -8,26 +8,13 @@ enum Dir {
 	N, E, S, W
 }
 
-#[derive(Debug)]
-struct Node {
-	state: Vec<i32>,
-}
-
-impl Node {
-	fn new(values: Vec<i32>) -> Node {
-		Node {
-			state: values,
-		}
-	}
-}
-
 // convert position from single dimension to double dimensions array
-fn fstod(index: usize, width: usize) -> (usize, usize) {
+fn fstod(index: i32, width: i32) -> (i32, i32) {
 	return (index % width, index / width);
 }
 
 // convert position from double dimensions to single dimension array
-fn fdtos(x: usize, y: usize, width: usize) -> usize {
+fn fdtos(x: i32, y: i32, width: i32) -> i32 {
 	return y * width + x;
 }
 
@@ -37,8 +24,11 @@ fn is_same(size: i32, state: &Vec<i32>, target: &Vec<i32>) -> bool {
 	return matching == (size * size) as usize;
 }
 
-// define new position
-fn new_position(dir: &Dir) -> (i32, i32) {
+fn slot_pos(size: i32, state: &Vec<i32>) -> usize {
+	return state.iter().position(|&x| x == size * size).unwrap_or(0);
+}
+
+fn movement_value(dir: &Dir) -> (i32, i32) {
 	return match dir {
 		Dir::N => (0, -1),
 		Dir::E => (1, 0),
@@ -47,43 +37,68 @@ fn new_position(dir: &Dir) -> (i32, i32) {
 	}
 }
 
+// define new position
+fn new_position(position: (i32, i32), movement_value: (i32, i32)) -> (i32, i32) {
+	// eprintln!("[position]: {:?}", position);
+	// eprintln!("[movement_value]: {:?}", movement_value);
+	return (position.0 as i32 + movement_value.0, position.1 as i32 + movement_value.1);
+}
+
 // moving the slot to get the new state
-fn apply_action(size: i32, state: &mut Vec<i32>, current_pos: (usize, usize), new_pos: (i32, i32)) -> Result<Vec<i32>, ()> {
-	let index_a = fdtos(current_pos.0, current_pos.1, size as usize);
-	let index_b = fdtos(new_pos.0 as usize, new_pos.1 as usize, size as usize);
-	if (0..(size * size)).contains(&(index_a as i32)) && (0..(size * size)).contains(&(index_b as i32)) {
-		state.swap(index_a, index_b);
-		return Ok(state.clone());
+fn apply_action(size: i32, state: &Vec<i32>, current_pos: (i32, i32), new_pos: (i32, i32)) -> Result<Vec<i32>, ()> {
+	let mut new_state = state.clone();
+	// eprintln!("--------------------");
+	// eprintln!("[state]: {:?}", state);
+	// eprintln!("[current_pos]: {:?}", current_pos);
+	// eprintln!("[new_pos]: {:?}", new_pos);
+	if (0..(size)).contains(&(new_pos.0)) && (0..(size)).contains(&(new_pos.1)) {
+		let index_a = fdtos(current_pos.0, current_pos.1, size);
+		let index_b = fdtos(new_pos.0, new_pos.1, size);
+		new_state.swap(index_a as usize, index_b as usize);
+		return Ok(new_state);
 	}
 	return Err(());
 }
 
 // find puzzle next possibilities
-fn get_neighbors(size: i32, mut state: Vec<i32>) -> Vec<Node> {
-	let sd_pos = state.iter().position(|&x| x == 0).unwrap_or(0); // single dimension position
-	let dd_pos = fstod(sd_pos, size as usize); // double dimension position
+fn get_neighbors(size: i32, state: &Vec<i32>, parent: usize) -> Vec<(Dir, Vec<i32>)> {
+	let sd_pos: usize = slot_pos(size, &state); // single dimension position
+	// eprintln!("--------------------");
+	// eprintln!("[sd_pos]: {:?}", sd_pos);
+	let dd_pos: (i32, i32) = fstod(sd_pos as i32, size); // double dimension position
+	// eprintln!("[dd_pos]: {:?}", dd_pos);
 	let positions = [Dir::N, Dir::E, Dir::S, Dir::W];
-	let mut neighbors: Vec<Node> = Vec::new();
+	let mut neighbors: Vec<(Dir, Vec<i32>)> = Vec::new();
 	for pos in positions.iter() {
-		let new_state = apply_action(size, &mut state, dd_pos, new_position(pos));
+		let new_state = apply_action(size, &state, dd_pos, new_position(dd_pos, movement_value(pos)));
 		if new_state.is_ok() {
-			neighbors.push(Node::new(new_state.unwrap()));
+			let unwrapped_new_state = new_state.unwrap();
+			if slot_pos(size, &unwrapped_new_state) != parent {
+				// eprintln!("[state]: {:?}", new_state);
+				neighbors.push((*pos, unwrapped_new_state));
+			}
 		}
 	}
 	return neighbors;
 }
 
 // recursive graph search
-fn graph_search(size: i32, node: Node, target: &Vec<i32>, sequence: &mut Vec<Dir>) -> Vec<Dir> {
-	if is_same(size, &node.state, target) {
-		return sequence.to_vec();
+fn graph_search(size: i32, state: Vec<i32>, target: &Vec<i32>, sequence: &mut Vec<Dir>, parent: usize) -> Result<Vec<Dir>, Vec<Dir>> {
+	eprintln!("********************");
+	eprintln!("[search state]: {:?}", state);
+	if is_same(size, &state, target) {
+		return Ok(sequence.to_vec());
 	}
-	let neighbors = get_neighbors(size, node.state);
-	for neighbour in neighbors {
-		graph_search(size, neighbour, &target, sequence);
+	let neighbors: Vec<(Dir, Vec<i32>)> = get_neighbors(size, &state, parent);
+	eprintln!("[neighbors]: {:?}", neighbors);
+	for neighbour in neighbors.iter() {
+		sequence.push(neighbour.0);
+		if graph_search(size, neighbour.1.clone(), &target, sequence, slot_pos(size, &state)).is_ok() {
+			return Ok(sequence.to_vec());
+		}
 	}
 	sequence.pop();
-	return sequence.to_vec();
+	return Err(sequence.to_vec());
 }
 
 // give snail value for a given index
@@ -134,14 +149,16 @@ fn load_file(args: &[String]) -> (i32, Vec<i32>) {
 
 fn main() {
 	let args: Vec<String> = env::args().collect();
-	let (size, values) = load_file(&args);
+	let (size, state) = load_file(&args);
 
-	let root: Node = Node::new(values);
-	println!("root: {:?}", root.state);
+	println!("root: {:?}", state);
 
 	let target = snail_generate(size);
 	println!("target: {:?}", target);
 
-	let sequence: Vec<Dir> = graph_search(size, root, &target, &mut Vec::new());
-	println!("sequence: {:?}", sequence);
+	let slot_pos = slot_pos(size, &state);
+	println!("slot_pos: {}", slot_pos);
+
+	let sequence: Result<Vec<Dir>, Vec<Dir>> = graph_search(size, state, &target, &mut Vec::new(), slot_pos);
+	println!("sequence: {:?}", sequence.unwrap());
 }
