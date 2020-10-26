@@ -24,6 +24,7 @@ fn is_same(size: i32, state: &Vec<i32>, target: &Vec<i32>) -> bool {
 	return matching == (size * size) as usize;
 }
 
+// position du slot
 fn slot_pos(size: i32, state: &Vec<i32>) -> usize {
 	return state.iter().position(|&x| x == size * size).unwrap_or(0);
 }
@@ -83,22 +84,21 @@ fn get_neighbors(size: i32, state: &Vec<i32>, parent: usize) -> Vec<(Dir, Vec<i3
 }
 
 // recursive graph search
-fn graph_search(size: i32, state: Vec<i32>, target: &Vec<i32>, sequence: &mut Vec<Dir>, parent: usize) -> Result<Vec<Dir>, Vec<Dir>> {
+fn graph_search(size: i32, state: Vec<i32>, target: &Vec<i32>, sequence: &mut Vec<Dir>, best_sequence: &mut Vec<Dir>, parent: usize) {
 	eprintln!("********************");
 	eprintln!("[search state]: {:?}", state);
 	if is_same(size, &state, target) {
-		return Ok(sequence.to_vec());
-	}
-	let neighbors: Vec<(Dir, Vec<i32>)> = get_neighbors(size, &state, parent);
-	eprintln!("[neighbors]: {:?}", neighbors);
-	for neighbour in neighbors.iter() {
-		sequence.push(neighbour.0);
-		if graph_search(size, neighbour.1.clone(), &target, sequence, slot_pos(size, &state)).is_ok() {
-			return Ok(sequence.to_vec());
+		*best_sequence = sequence.clone();
+		eprintln!("[!] [solution]: {:?}", best_sequence);
+	} else {
+		let neighbors: Vec<(Dir, Vec<i32>)> = get_neighbors(size, &state, parent);
+		eprintln!("[neighbors]: {:?}", neighbors);
+		for neighbour in neighbors.iter() {
+			sequence.push(neighbour.0);
+			graph_search(size, neighbour.1.clone(), &target, sequence, best_sequence, slot_pos(size, &state)); // check si possible eviter clone
 		}
 	}
 	sequence.pop();
-	return Err(sequence.to_vec());
 }
 
 // give snail value for a given index
@@ -159,6 +159,9 @@ fn main() {
 	let slot_pos = slot_pos(size, &state);
 	println!("slot_pos: {}", slot_pos);
 
-	let sequence: Result<Vec<Dir>, Vec<Dir>> = graph_search(size, state, &target, &mut Vec::new(), slot_pos);
-	println!("sequence: {:?}", sequence.unwrap());
+	let mut best_sequence: Vec<Dir> = Vec::new();
+
+	graph_search(size, state, &target, &mut Vec::new(), &mut best_sequence, slot_pos);
+
+	println!("sequence: {:?}", best_sequence);
 }
