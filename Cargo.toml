@@ -1,5 +1,5 @@
 [package]
-name = "n-puzzle"
+name = "npuzzle"
 version = "0.1.0"
 authors = ["Simon Galasso <simon.galasso@hotmail.fr>"]
 edition = "2018"
@@ -8,3 +8,4 @@ edition = "2018"
 
 [dependencies]
 rulinalg = "0.4.2"
+rand = "0.7.3"
