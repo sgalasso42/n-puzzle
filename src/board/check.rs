@@ -69,7 +69,7 @@ pub fn is_solvable(size: i32, board:Vec<i32>) -> bool {
 	* Checks if the board is solvable
 	* @return the true if it is
 	*/
-	let solved_board: Vec<i32> = create::create_solved_board(size);
+	let solved_board: Vec<i32> = create::snail_generate(size);
 	// Check and rewrite empty tile -> needs to be 0
 	let my_board: Vec<i32> = rewrite_max_value(board.clone(), size);
 	// Get nb of inversions for board and result
