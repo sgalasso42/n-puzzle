@@ -4,7 +4,7 @@ fn get_inversion_count(board:Vec<i32>, s:i32) -> i32 {
 	let mut inv_count:i32 = 0;
 	for i in 0..(s * s - 1) {
 		for j in(i + 1)..(s * s) {
-			if board[i as usize] != s * s && board[j as usize] != s * s && board[i as usize] != 0 && board[j as usize] != 0 && board[i as usize] > board[j as usize] {
+			if board[i as usize] != s * s && board[j as usize] != s * s && board[i as usize] > board[j as usize] {
 				inv_count += 1;
 			}
 		}
