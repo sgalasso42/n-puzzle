@@ -24,12 +24,12 @@ fn main() {
 	let target = snail_generate(size);
 	println!("[target]: {:?}", target);
 
-	let slot_pos = slot_pos(size, &state);
-	println!("slot_pos: {}", slot_pos);
+	// let slot_pos = slot_pos(size, &state);
+	// println!("slot_pos: {}", slot_pos);
 
-	let mut best_sequence: Vec<Dir> = Vec::new();
+	// let mut best_sequence: Vec<Dir> = Vec::new();
 
-	graph_search(size, state, &target, &mut Vec::new(), &mut best_sequence, slot_pos);
+	// graph_search(size, state, &target, &mut Vec::new(), &mut best_sequence, slot_pos);
 
-	println!("sequence: {:?}", best_sequence);
+	// println!("sequence: {:?}", best_sequence);
 }
