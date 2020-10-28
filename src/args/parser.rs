@@ -1,8 +1,9 @@
 use std::io::{BufReader};
 use std::io::prelude::*;
 use std::fs::File;
+use crate::board::create::{board_generate};
 
-pub fn load_file(args: &[String]) -> (i32, Vec<i32>) {
+fn load_file(args: &[String]) -> (i32, Vec<i32>) {
 	if args.len() != 2 {
 		panic!("error: bad args number")
 	}
@@ -26,4 +27,14 @@ pub fn load_file(args: &[String]) -> (i32, Vec<i32>) {
 	// if size * size != value.len => error
 	// handle comments #
 	return (size, values);
+}
+
+pub fn handle_args(args: &Vec<String>) -> (i32, Vec<i32>) {
+	let (size, state) = if args.len() > 1 && args[1] == "--create" {
+		board_generate(&args[2], 1000)
+	} else {
+		load_file(&args)
+	};
+
+	return (size, state);
 }

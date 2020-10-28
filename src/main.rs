@@ -1,23 +1,15 @@
 use std::env;
 
 extern crate npuzzle;
-use npuzzle::board::create::*;
-use npuzzle::board::check::*;
-use npuzzle::board::utils::*;
-use npuzzle::algo::graph::*;
-use npuzzle::args::parser::*;
-// To use only needed function and refato, see args/mod.rs
-// use npuzzle::args::*;
+use npuzzle::board::create::{snail_generate};
+use npuzzle::board::check::{is_solvable};
+use npuzzle::board::utils::{slot_pos};
+use npuzzle::algo::graph::{graph_search, Dir};
+use npuzzle::args::parser::{handle_args};
 
 fn main() {
 	let args: Vec<String> = env::args().collect();
-
-	let (size, state) = 
-	if args.len() > 1 && args[1] == "--create" {
-		board_generate(&args[2], 1000)
-	} else {
-		load_file(&args)
-	};
+	let (size, state) = handle_args(&args);
 
 	println!("[size]: {:?}", size);
 	println!("[state]: {:?}", state);
