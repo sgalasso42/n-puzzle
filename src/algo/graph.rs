@@ -1,8 +1,8 @@
 use crate::board::utils::*;
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub enum Dir {
-	N, E, S, W
+	N, E, S, W, None
 }
 
 fn movement_value(dir: &Dir) -> (i32, i32) {
@@ -10,7 +10,8 @@ fn movement_value(dir: &Dir) -> (i32, i32) {
 		Dir::N => (0, -1),
 		Dir::E => (1, 0),
 		Dir::S => (0, 1),
-		Dir::W => (-1, 0)
+		Dir::W => (-1, 0),
+		Dir::None => (0, 0)
 	}
 }
 
@@ -38,7 +39,7 @@ fn apply_action(size: i32, state: &Vec<i32>, current_pos: (i32, i32), new_pos: (
 }
 
 // find puzzle next possibilities
-fn get_neighbors(size: i32, state: &Vec<i32>, parent: usize) -> Vec<(Dir, Vec<i32>)> {
+fn get_neighbors(size: i32, state: &Vec<i32>) -> Vec<(Dir, Vec<i32>)> {
 	let sd_pos: usize = slot_pos(size, &state); // single dimension position
 	// eprintln!("--------------------");
 	// eprintln!("[sd_pos]: {:?}", sd_pos);
@@ -49,30 +50,40 @@ fn get_neighbors(size: i32, state: &Vec<i32>, parent: usize) -> Vec<(Dir, Vec<i3
 	for pos in positions.iter() {
 		let new_state = apply_action(size, &state, dd_pos, new_position(dd_pos, movement_value(pos)));
 		if new_state.is_ok() {
-			let unwrapped_new_state = new_state.unwrap();
-			if slot_pos(size, &unwrapped_new_state) != parent {
-				// eprintln!("[state]: {:?}", new_state);
-				neighbors.push((*pos, unwrapped_new_state));
-			}
+			neighbors.push((*pos, new_state.unwrap()));
 		}
 	}
 	return neighbors;
 }
 
 // recursive graph search
-pub fn graph_search(size: i32, state: Vec<i32>, target: &Vec<i32>, sequence: &mut Vec<Dir>, best_sequence: &mut Vec<Dir>, parent: usize) {
-	eprintln!("********************");
-	eprintln!("[search state]: {:?}", state);
-	if is_same(size, &state, target) {
-		*best_sequence = sequence.clone();
-		eprintln!("[!] [solution]: {:?}", best_sequence);
-	} else {
-		let neighbors: Vec<(Dir, Vec<i32>)> = get_neighbors(size, &state, parent);
-		eprintln!("[neighbors]: {:?}", neighbors);
-		for neighbour in neighbors.iter() {
-			sequence.push(neighbour.0);
-			graph_search(size, neighbour.1.clone(), &target, sequence, best_sequence, slot_pos(size, &state)); // check si possible eviter clone
+fn graph_search(size: i32, path: &mut Vec<(Dir, Vec<i32>)>, target: &Vec<i32>, cost: i32, bound: i32) -> (bool, i32) {
+	let node = path.last().unwrap();
+	let new_cost = cost/* + h(node)*/;
+	// eprintln!("********************");
+	// eprintln!("[search node]: {:?}", node);
+	if new_cost > bound { return (false, new_cost) }
+	if node.1 == *target { return (true, new_cost) }
+	// eprintln!("[neighbors]: {:?}", neighbors);
+	let mut min: i32 = std::i32::MAX;
+	for neighbour in get_neighbors(size, &node.1).iter() {
+		if !path.contains(neighbour) {
+			path.push(neighbour.clone());
+			let res = graph_search(size, path, target, cost + 1, bound);
+			if res.0 { return (true, min) }
+			if res.1 < min { min = res.1 }
+			path.pop();
 		}
 	}
-	sequence.pop();
+	return (false, min);
+}
+
+// loop
+pub fn resolve_puzzle(size: i32, path: &mut Vec<(Dir, Vec<i32>)>, target: &Vec<i32>) {
+	let mut bound = /*h(state)*/ 1;
+	loop {
+		let res = graph_search(size, path, target, 0, bound);
+		if res.0 { break }
+		bound = res.1;
+	}
 }
