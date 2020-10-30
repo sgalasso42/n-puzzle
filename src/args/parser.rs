@@ -2,6 +2,7 @@ use std::io::{BufReader};
 use std::io::prelude::*;
 use std::fs::File;
 use crate::board::create::{board_generate};
+use clap::{Arg, App};
 
 fn load_file(args: &[String]) -> (i32, Vec<i32>) {
 	if args.len() != 2 {
@@ -37,4 +38,60 @@ pub fn handle_args(args: &Vec<String>) -> (i32, Vec<i32>) {
 	};
 
 	return (size, state);
+}
+
+pub fn test_args() {
+	let matches = App::new("npuzzle")
+        .version("0.1.0")
+        .author("Simon Galasso <simon.galasso@hotmail.fr>, Nicolas Vienot <nvienot@gmail.com>")
+        .about("Solving taquins!")
+        .arg(Arg::with_name("file")
+			.short("f")
+			.long("file")
+			.value_name("file")
+			.takes_value(true)
+			.help("Path to the file to read from"))
+        .arg(Arg::with_name("size")
+			.short("s")
+			.long("size")
+			.value_name("nb")
+			.takes_value(true)
+			.help("The size of the puzzle"))
+		.arg(Arg::with_name("iterations")
+			.short("i")
+			.long("iterations")
+			.value_name("nb")
+			.takes_value(true)
+			.help("The number of iterations"))
+		.arg(Arg::with_name("heuristic")
+			.short("h")
+			.long("heuristic")
+			.value_name("name")
+			.takes_value(true)
+			.help("The heuristic you want to choose from"))
+		.arg(Arg::with_name("unsolvable")
+			.short("u")
+			.long("unsolvable")
+			.takes_value(false)
+			.help("Generates an unsolvable puzzle"))
+		.arg(Arg::with_name("visual")
+			.short("v")
+			.long("visual")
+			.takes_value(false)
+			.help("Make a visualisation of the result"))
+        .get_matches();
+
+    // let myfile = matches.value_of("file").unwrap_or("input.txt");
+    // println!("The file passed is: {}", myfile);
+
+    // let num_str = matches.value_of("num");
+    // match num_str {
+    //     None => println!("No idea what your favorite number is."),
+    //     Some(s) => {
+    //         match s.parse::<i32>() {
+    //             Ok(n) => println!("Your favorite number must be {}.", n + 5),
+    //             Err(_) => println!("That's not a number! {}", s),
+    //         }
+    //     }
+    // }
 }

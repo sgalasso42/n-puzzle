@@ -1,51 +1,55 @@
 use std::env;
 use std::time::{Instant};
+use clap::{Arg, App};
 
 extern crate npuzzle;
 use npuzzle::board::create::{snail_generate};
 use npuzzle::board::check::{is_solvable};
 use npuzzle::board::utils::{slot_pos};
 use npuzzle::algo::graph::{resolve_puzzle, Dir};
-use npuzzle::args::parser::{handle_args};
+use npuzzle::args::parser::{handle_args, test_args};
 
 fn main() {
-	let args: Vec<String> = env::args().collect();
-	let (size, state) = handle_args(&args);
+	test_args();
 
-	println!("size: {:?}", size);
-	println!("state: {:?}", state);
+
+	// let args: Vec<String> = env::args().collect();
+	// let (size, state) = handle_args(&args);
+
+	// println!("size: {:?}", size);
+	// println!("state: {:?}", state);
 	
-	let slot_pos = slot_pos(size, &state);
-	println!("slot_pos: {}", slot_pos);
+	// let slot_pos = slot_pos(size, &state);
+	// println!("slot_pos: {}", slot_pos);
 
-	let solvable: bool = is_solvable(size, state.clone());
-	println!("solvable: {:?}", solvable);
+	// let solvable: bool = is_solvable(size, state.clone());
+	// println!("solvable: {:?}", solvable);
 
-	if !solvable {
-		panic!("error: puzzle not solvable")
-	}
+	// if !solvable {
+	// 	panic!("error: puzzle not solvable")
+	// }
 
-	let target = snail_generate(size);
-	println!("target: {:?}", target);
+	// let target = snail_generate(size);
+	// println!("target: {:?}", target);
 
-	let mut path: Vec<(Dir, Vec<i32>)> = Vec::new();
-	path.push((Dir::None, state));
+	// let mut path: Vec<(Dir, Vec<i32>)> = Vec::new();
+	// path.push((Dir::None, state));
 
-	eprintln!("-------");
+	// eprintln!("-------");
 	
-	let start_time = Instant::now();
-	resolve_puzzle(size, &mut path, &target);
+	// let start_time = Instant::now();
+	// resolve_puzzle(size, &mut path, &target);
 	
-	eprintln!("-------");
+	// eprintln!("-------");
 	
-	let mut sequence = Vec::new();
-	for node in path.iter() {
-		if node.0 != Dir::None { sequence.push(node.0) }
-	}
+	// let mut sequence = Vec::new();
+	// for node in path.iter() {
+	// 	if node.0 != Dir::None { sequence.push(node.0) }
+	// }
 
-	println!("solution: {:?}", sequence);
-	println!("moves number: {:?}", path.len() - 1);
-	eprintln!("duration: {:?}s ({:?})\n", start_time.elapsed().as_secs(), start_time.elapsed());
+	// println!("solution: {:?}", sequence);
+	// println!("moves number: {:?}", path.len() - 1);
+	// eprintln!("duration: {:?}s ({:?})\n", start_time.elapsed().as_secs(), start_time.elapsed());
 	
-	eprintln!("-------");
+	// eprintln!("-------");
 }
