@@ -1,5 +1,5 @@
 use crate::board::utils::*;
-use crate::algo::heuristics::{manhattan};
+use crate::algo::heuristics::{manhattan, euclidian};
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum Dir {
