@@ -6,11 +6,14 @@ use npuzzle::board::create::{snail_generate};
 use npuzzle::board::check::{is_solvable};
 use npuzzle::board::utils::{slot_pos};
 use npuzzle::algo::graph::{resolve_puzzle, Dir};
-use npuzzle::args::parser::{handle_args};
+use npuzzle::args::handle::{handle_args};
+use npuzzle::args::parser::{Config};
 
 fn main() {
-	let args: Vec<String> = env::args().collect();
-	let (size, state) = handle_args(&args);
+	let config = Config::new();
+	println!("Config, {:?}", config);
+
+	let (size, state) = handle_args(&config);
 
 	println!("size: {:?}", size);
 	println!("state: {:?}", state);

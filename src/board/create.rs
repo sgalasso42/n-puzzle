@@ -21,12 +21,12 @@ pub fn snail_generate(size: i32) -> Vec<i32> {
 }
 
 // generate a game board array of a given size
-pub fn board_generate(size: &String, iterations: i32) -> (i32, Vec<i32>) {
+pub fn board_generate(s: i32, iterations: i32) -> (i32, Vec<i32>) {
 	/*
 	* Creates a game board
 	* @return the generated game board
 	*/
-	let s: i32 = size.parse().unwrap_or(0);
+	// let s: i32 = size.parse().unwrap_or(0);
 	let mut board: Vec<i32> = snail_generate(s);
 	
 	let mut i: i32 = 0;
