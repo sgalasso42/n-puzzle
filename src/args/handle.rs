@@ -5,9 +5,6 @@ use crate::board::create::{board_generate};
 use crate::args::parser::{Config};
 
 fn load_file(file: &String) -> (i32, Vec<i32>) {
-	// if args.len() != 2 {
-	// 	panic!("error: bad args number")
-	// }
 	let file = File::open(file).expect("error: file not found");
 	let lines: Vec<_> = BufReader::new(file).lines().collect();
 	let mut size = 0;

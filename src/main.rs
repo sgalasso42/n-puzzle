@@ -1,6 +1,5 @@
 use std::env;
 use std::time::{Instant};
-use clap::{Arg, App};
 
 extern crate npuzzle;
 use npuzzle::board::create::{snail_generate};
