@@ -62,7 +62,6 @@ fn graph_search(size: i32, path: &mut Vec<(Dir, Vec<i32>)>, target: &Vec<i32>, c
 	let node = path.last().unwrap();
 	let new_cost = cost + manhattan(size, &node.1, target);
 	
-	// eprintln!("{}", manhattan(node));
 	// eprintln!("[search node]: {:?}", node);
 	if new_cost > bound { return (false, new_cost) }
 	if node.1 == *target { return (true, new_cost) }
