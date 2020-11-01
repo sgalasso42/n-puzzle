@@ -1,5 +1,5 @@
 use crate::board::utils::*;
-use crate::heuristics::manhattan::*;
+use crate::algo::heuristics::{manhattan};
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum Dir {
@@ -60,9 +60,9 @@ fn get_neighbors(size: i32, state: &Vec<i32>) -> Vec<(Dir, Vec<i32>)> {
 // recursive graph search
 fn graph_search(size: i32, path: &mut Vec<(Dir, Vec<i32>)>, target: &Vec<i32>, cost: i32, bound: i32) -> (bool, i32) {
 	let node = path.last().unwrap();
-	let new_cost = cost/* + h(node)*/;
-
-	eprintln!(manhattan(node));
+	let new_cost = cost + manhattan(size, &node.1, target);
+	
+	// eprintln!("{}", manhattan(node));
 	// eprintln!("[search node]: {:?}", node);
 	if new_cost > bound { return (false, new_cost) }
 	if node.1 == *target { return (true, new_cost) }
@@ -82,7 +82,8 @@ fn graph_search(size: i32, path: &mut Vec<(Dir, Vec<i32>)>, target: &Vec<i32>, c
 
 // loop
 pub fn resolve_puzzle(size: i32, path: &mut Vec<(Dir, Vec<i32>)>, target: &Vec<i32>) {
-	let mut bound = /*h(state)*/ 1;
+	let node = path.last().unwrap();
+	let mut bound = manhattan(size, &node.1, target);
 	loop {
 		let res = graph_search(size, path, target, 0, bound);
 		if res.0 { break }
