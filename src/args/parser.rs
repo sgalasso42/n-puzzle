@@ -1,6 +1,7 @@
 use clap::{Arg, App};
+use std::ffi::OsString;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Config {
 	pub file: String,
 	pub size: i32,
@@ -13,6 +14,14 @@ pub struct Config {
 
 impl Config {
 	pub fn new() -> Self {
+        Self::new_from(std::env::args_os().into_iter()).unwrap_or_else(|e| e.exit())
+	}
+	
+	pub fn new_from<I, T>(args: I) -> Result<Self, clap::Error>
+    where
+        I: Iterator<Item = T>,
+        T: Into<OsString> + Clone,
+    {
 		let app = App::new("npuzzle")
 			.version("0.1.0")
 			.author("Simon Galasso <simon.galasso@hotmail.fr>, Nicolas Vienot <nvienot@gmail.com>")
@@ -72,7 +81,7 @@ impl Config {
 			.arg(unsolvable_option)
 			.arg(visual_option);
 		
-		let matches = app.get_matches();
+		let matches = app.get_matches_from_safe(args)?;
 		let file: String = matches.value_of("file").unwrap_or("").to_string();
 		let size: i32 = matches.value_of("size").unwrap_or("3").parse().unwrap_or(3);
 		let iterations: i32 = matches.value_of("iterations").unwrap_or("1000").parse().unwrap_or(1000);
@@ -81,7 +90,7 @@ impl Config {
 		let unsolvable: bool = matches.is_present("unsolvable");
 		let visual: bool = matches.is_present("visual");
 
-		Config {
+		Ok(Config {
 			file: file,
 			size: size,
 			iterations: iterations,
@@ -89,6 +98,6 @@ impl Config {
 			solvable: solvable,
 			unsolvable: unsolvable,
 			visual: visual
-		}
+		})
 	}
 }
