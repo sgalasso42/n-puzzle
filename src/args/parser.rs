@@ -14,13 +14,13 @@ pub struct Config {
 
 impl Config {
 	pub fn new() -> Self {
-        Self::new_from(std::env::args_os().into_iter()).unwrap_or_else(|e| e.exit())
+		Self::new_from(std::env::args_os().into_iter()).unwrap_or_else(|e| e.exit())
 	}
 	
 	pub fn new_from<I, T>(args: I) -> Result<Self, clap::Error>
     where
-        I: Iterator<Item = T>,
-        T: Into<OsString> + Clone,
+			I: Iterator<Item = T>,
+			T: Into<OsString> + Clone,
     {
 		let app = App::new("npuzzle")
 			.version("0.1.0")

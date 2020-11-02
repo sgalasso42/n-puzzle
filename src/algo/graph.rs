@@ -64,7 +64,7 @@ fn graph_search(size: i32, path: &mut Vec<(Dir, Vec<i32>)>, target: &Vec<i32>, c
 	
 	// eprintln!("[search node]: {:?}", node);
 	if new_cost > bound { return (false, new_cost) }
-	if node.1 == *target { return (true, new_cost) }
+	else if node.1 == *target { return (true, new_cost) }
 	// eprintln!("[neighbors]: {:?}", neighbors);
 	let mut min: i32 = std::i32::MAX;
 	for neighbour in get_neighbors(size, &node.1).iter() {
@@ -72,7 +72,7 @@ fn graph_search(size: i32, path: &mut Vec<(Dir, Vec<i32>)>, target: &Vec<i32>, c
 			path.push(neighbour.clone());
 			let res = graph_search(size, path, target, cost + 1, bound);
 			if res.0 { return (true, min) }
-			if res.1 < min { min = res.1 }
+			else if res.1 < min { min = res.1 }
 			path.pop();
 		}
 	}

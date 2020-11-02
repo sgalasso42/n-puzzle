@@ -3,7 +3,7 @@ use std::time::{Instant};
 extern crate npuzzle;
 use npuzzle::board::create::{snail_generate};
 use npuzzle::board::check::{is_solvable};
-use npuzzle::board::utils::{slot_pos};
+use npuzzle::board::utils::{slot_pos, factorial};
 use npuzzle::algo::graph::{resolve_puzzle, Dir};
 use npuzzle::args::handle::{handle_args};
 use npuzzle::args::parser::{Config};
@@ -36,7 +36,7 @@ fn main() {
 	eprintln!("-------");
 	
 	let start_time = Instant::now();
-	resolve_puzzle(size, &mut path, &target);
+	// resolve_puzzle(size, &mut path, &target);
 	
 	eprintln!("-------");
 	
@@ -47,7 +47,8 @@ fn main() {
 
 	println!("solution: {:?}", sequence);
 	println!("moves number: {:?}", path.len() - 1);
-	eprintln!("duration: {:?}s ({:?})\n", start_time.elapsed().as_secs(), start_time.elapsed());
+	println!("possible nb of solvable states: {:?}", factorial((size * size) as u64) / 2);
+	println!("duration: {:?}s ({:?})", start_time.elapsed().as_secs(), start_time.elapsed());
 	
 	eprintln!("-------");
 }

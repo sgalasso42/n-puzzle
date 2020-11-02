@@ -32,3 +32,7 @@ pub fn euclidian(size: i32, state: &Vec<i32>, target: &Vec<i32>) -> i32 {
 	// eprintln!("dist: {:?}", dist);
     return dist as i32;
 }
+
+// pub fn linear_conflict() -> i32 {
+
+// }
