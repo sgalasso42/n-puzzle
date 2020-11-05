@@ -7,6 +7,7 @@ use npuzzle::board::utils::{slot_pos, factorial};
 use npuzzle::algo::graph::{resolve_puzzle, Dir};
 use npuzzle::args::handle::{handle_args};
 use npuzzle::args::parser::{Config};
+use npuzzle::graphics::init::{graphics};
 
 fn main() {
 	let config = Config::new();
@@ -53,4 +54,8 @@ fn main() {
 	println!("duration: {:?}s ({:?})", start_time.elapsed().as_secs(), start_time.elapsed());
 	
 	eprintln!("-------");
+
+	if config.visual == true {
+		graphics();
+	}
 }
