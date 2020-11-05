@@ -19,7 +19,8 @@ use piston_window::*;
 pub struct Visu {
     gl: GlGraphics,
     board: Vec<i32>,
-    size: i32
+    size: i32,
+    time: String
 }
 
 impl Visu {
@@ -41,7 +42,8 @@ impl Visu {
         let (win_w, win_h) = (args.window_size[0] / 2.0, args.window_size[1] / 2.0);
 
         let board = self.board.clone();
-
+        let time = self.time.clone();
+        
         let assets = find_folder::Search::ParentsThenKids(3, 3)
         .for_folder("assets").unwrap();
         let ref font = assets.join("font.ttf");
@@ -75,6 +77,13 @@ impl Visu {
                     ).unwrap();
                 }
             }
+
+             text::Text::new_color([0.0, 0.5, 0.0, 1.0], 64).draw(
+                        &("Time : ".to_string() + &time + &("s".to_string())),
+                        &mut glyph_cache,
+                        &c.draw_state,
+                         c.transform.trans(10.0, 600.0), gl
+                    ).unwrap();
         });
     }
 
@@ -87,14 +96,14 @@ impl Visu {
     }
 }
 
-pub fn graphics(board_array: &[Vec<i32>], size: i32) {
+pub fn graphics(board_array: &[Vec<i32>], size: i32, time: String) {
     
     let mut index: usize = 0;
     let opengl = OpenGL::V3_2;
 
     let mut window: PistonWindow = WindowSettings::new(
                 "npuzzle",
-                [500, 500]
+                [500, 700]
             )
             .graphics_api(opengl)
             .fullscreen(false)
@@ -107,6 +116,7 @@ pub fn graphics(board_array: &[Vec<i32>], size: i32) {
         gl: GlGraphics::new(opengl),
         board: board_array[index].clone(),
         size: size,
+        time: time,
     };
 
     let mut events = Events::new(EventSettings::new());
