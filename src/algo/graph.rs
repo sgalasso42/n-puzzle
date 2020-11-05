@@ -92,3 +92,17 @@ pub fn resolve_puzzle(size: i32, path: &mut Vec<(Dir, Vec<i32>)>, target: &Vec<i
 		eprintln!("new bound: {}", bound);
 	}
 }
+
+pub fn get_full_array(state: Vec<i32>, size: i32, sequence: &Vec<Dir>) -> Vec<Vec<i32>> {
+	let mut state_updated: Vec<i32> = state.clone();
+	let mut board_array: Vec<Vec<i32>> = Vec::new();
+	board_array.push(state.clone());
+	for pos in sequence.iter() {
+		let sd_pos: usize = slot_pos(size, &state_updated);
+		let dd_pos: (i32, i32) = fstod(sd_pos as i32, size);
+		let new_state = apply_action(size, &state_updated, dd_pos, new_position(dd_pos, movement_value(pos))).unwrap();
+		board_array.push(new_state.clone());
+		state_updated = new_state.clone();
+	}
+	return board_array;
+}

@@ -4,7 +4,7 @@ extern crate npuzzle;
 use npuzzle::board::create::{snail_generate};
 use npuzzle::board::check::{is_solvable};
 use npuzzle::board::utils::{slot_pos, factorial};
-use npuzzle::algo::graph::{resolve_puzzle, Dir};
+use npuzzle::algo::graph::{resolve_puzzle, Dir, get_full_array};
 use npuzzle::args::handle::{handle_args};
 use npuzzle::args::parser::{Config};
 use npuzzle::graphics::init::{graphics};
@@ -30,7 +30,7 @@ fn main() {
 	println!("target: {:?}", target);
 
 	let mut path: Vec<(Dir, Vec<i32>)> = Vec::new();
-	path.push((Dir::None, state));
+	path.push((Dir::None, state.clone()));
 
 	eprintln!("-------");
 	
@@ -56,8 +56,7 @@ fn main() {
 	eprintln!("-------");
 
 	if config.visual == true {
-		let size: i32 = 3;
-    	let board_array = [vec![3, 2, 6, 1, 4, 9, 8, 7, 5], vec![3, 2, 6, 1, 9, 4, 8, 7, 5], vec![3, 2, 6, 9, 1, 4, 8, 7, 5], vec![3, 2, 9, 6, 1, 4, 8, 7, 5]];
+		let board_array = get_full_array(state.clone(), size, &sequence);
 		graphics(&board_array, size);
 	}
 }
