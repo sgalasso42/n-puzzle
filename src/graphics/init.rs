@@ -21,7 +21,7 @@ pub struct App {
 }
 
 impl App {
-    fn render(&mut self, args: &RenderArgs, window: &PistonWindow) {
+    fn render(&mut self, args: &RenderArgs) {
         // use graphics::*;
         const GREEN: [f32; 4] = [0.0, 1.0, 0.0, 1.0];
         const RED: [f32; 4] = [1.0, 0.0, 0.0, 1.0];
@@ -67,16 +67,12 @@ impl App {
                     
                 }
             }
-                    println!("HEY");
-
             // Draw a box rotating around the middle of the screen.
             // grid(RED, square, transform, gl);
         });
     }
 
     fn update(&mut self, args: &UpdateArgs) {
-                    println!("YO");
-
         // Rotate 2 radians per second.
         // self.rotation += 2.0 * args.dt;
     }
@@ -113,7 +109,7 @@ pub fn graphics() {
     let mut events = Events::new(EventSettings::new());
     while let Some(e) = events.next(&mut window) {
         if let Some(args) = e.render_args() {
-            app.render(&args, &window);
+            app.render(&args);
         }
 
         // if let Some(args) = e.update_args() {
