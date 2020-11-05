@@ -58,7 +58,8 @@ fn get_neighbors(size: i32, state: &Vec<i32>) -> Vec<(Dir, Vec<i32>)> {
 }
 
 // recursive graph search
-fn graph_search(size: i32, path: &mut Vec<(Dir, Vec<i32>)>, target: &Vec<i32>, cost: i32, bound: i32) -> (bool, i32) {
+fn graph_search(size: i32, path: &mut Vec<(Dir, Vec<i32>)>, target: &Vec<i32>, cost: i32, bound: i32, explored_node: &mut i32) -> (bool, i32) {
+	*explored_node += 1;
 	let node = path.last().unwrap();
 	let new_cost = cost + linear_conflict(size, &node.1, target);
 	
@@ -70,7 +71,7 @@ fn graph_search(size: i32, path: &mut Vec<(Dir, Vec<i32>)>, target: &Vec<i32>, c
 	for neighbour in get_neighbors(size, &node.1).iter() {
 		if !path.contains(neighbour) {
 			path.push(neighbour.clone());
-			let res = graph_search(size, path, target, cost + 1, bound);
+			let res = graph_search(size, path, target, cost + 1, bound, explored_node);
 			if res.0 { return (true, min) }
 			else if res.1 < min { min = res.1 }
 			path.pop();
@@ -80,12 +81,12 @@ fn graph_search(size: i32, path: &mut Vec<(Dir, Vec<i32>)>, target: &Vec<i32>, c
 }
 
 // loop
-pub fn resolve_puzzle(size: i32, path: &mut Vec<(Dir, Vec<i32>)>, target: &Vec<i32>) {
+pub fn resolve_puzzle(size: i32, path: &mut Vec<(Dir, Vec<i32>)>, target: &Vec<i32>, explored_node: &mut i32) {
 	let node = path.last().unwrap();
 	let mut bound = linear_conflict(size, &node.1, target);
-	// loop {
-	// 	let res = graph_search(size, path, target, 0, bound);
-	// 	if res.0 { break; }
-	// 	bound = res.1;
-	// }
+	loop {
+		let res = graph_search(size, path, target, 0, bound, explored_node);
+		if res.0 { break; }
+		bound = res.1;
+	}
 }

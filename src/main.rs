@@ -23,9 +23,9 @@ fn main() {
 	let solvable: bool = is_solvable(size, state.clone());
 	println!("solvable: {:?}", solvable);
 
-	// if !solvable {
-	// 	panic!("error: puzzle not solvable")
-	// }
+	if !solvable {
+		panic!("error: puzzle not solvable")
+	}
 
 	let target = snail_generate(size);
 	println!("target: {:?}", target);
@@ -36,7 +36,8 @@ fn main() {
 	eprintln!("-------");
 	
 	let start_time = Instant::now();
-	resolve_puzzle(size, &mut path, &target);
+	let mut explored_node: i32 = 0;
+	resolve_puzzle(size, &mut path, &target, &mut explored_node);
 	// use crate::npuzzle::algo::heuristics::{linear_conflict};
 	// linear_conflict(size, &(path.last().unwrap().1), &target);
 	
@@ -49,6 +50,7 @@ fn main() {
 
 	println!("solution: {:?}", sequence);
 	println!("moves number: {:?}", path.len() - 1);
+	println!("explored nodes: {}", explored_node);
 	println!("possible nb of solvable states: {:?}", factorial((size * size) as u64) / 2);
 	println!("duration: {:?}s ({:?})", start_time.elapsed().as_secs(), start_time.elapsed());
 	
