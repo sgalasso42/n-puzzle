@@ -56,6 +56,8 @@ fn main() {
 	eprintln!("-------");
 
 	if config.visual == true {
-		graphics();
+		let size: i32 = 3;
+    	let board_array = [vec![3, 2, 6, 1, 4, 9, 8, 7, 5], vec![3, 2, 6, 1, 9, 4, 8, 7, 5], vec![3, 2, 6, 9, 1, 4, 8, 7, 5], vec![3, 2, 9, 6, 1, 4, 8, 7, 5]];
+		graphics(&board_array, size);
 	}
 }
