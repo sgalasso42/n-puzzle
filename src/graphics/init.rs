@@ -87,7 +87,7 @@ impl App {
     }
 
     fn updateBoard(&mut self, args: &Button, board: Vec<i32>) {
-        println!("function update right");
+        println!("function update board");
 
         // Rotate 2 radians per second.
         self.board = board;
