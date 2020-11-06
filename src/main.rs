@@ -36,8 +36,8 @@ fn main() {
 	eprintln!("-------");
 	
 	let start_time = Instant::now();
-	let mut explored_node: i32 = 0;
-	resolve_puzzle(size, &mut path, &target, &mut explored_node);
+	let mut explored_nodes: i32 = 0;
+	resolve_puzzle(size, &mut path, &target, &mut explored_nodes);
 	// use crate::npuzzle::algo::heuristics::{linear_conflict};
 	// linear_conflict(size, &(path.last().unwrap().1), &target);
 	
@@ -50,7 +50,7 @@ fn main() {
 
 	println!("solution: {:?}", sequence);
 	println!("moves number: {:?}", path.len() - 1);
-	println!("explored nodes: {}", explored_node);
+	println!("explored nodes: {}", explored_nodes);
 	println!("possible nb of solvable states: {:?}", factorial((size * size) as u64) / 2);
 	println!("duration: {:?}s ({:?})", start_time.elapsed().as_secs(), start_time.elapsed());
 	
