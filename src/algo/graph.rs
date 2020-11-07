@@ -84,9 +84,11 @@ fn graph_search(size: i32, path: &mut Vec<(Dir, Vec<i32>)>, target: &Vec<i32>, c
 pub fn resolve_puzzle(size: i32, path: &mut Vec<(Dir, Vec<i32>)>, target: &Vec<i32>, explored_nodes: &mut i32) {
 	let node = path.last().unwrap();
 	let mut bound = linear_conflict(size, &node.1, target);
-	// loop {
-	// 	let res = graph_search(size, path, target, 0, bound, explored_nodes);
-	// 	if res.0 { break; }
-	// 	bound = res.1;
-	// }
+	eprintln!("bound: {}", bound);
+	loop {
+		let res = graph_search(size, path, target, 0, bound, explored_nodes);
+		if res.0 { break; }
+		bound = res.1;
+		eprintln!("new bound: {}", bound);
+	}
 }

@@ -10,8 +10,6 @@ use npuzzle::args::parser::{Config};
 
 fn main() {
 	let config = Config::new();
-	println!("Config, {:?}", config);
-
 	let (size, state) = handle_args(&config);
 
 	println!("size: {:?}", size);
