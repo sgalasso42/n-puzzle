@@ -1,5 +1,5 @@
 use crate::board::utils::*;
-use crate::algo::heuristics::{manhattan, euclidian};
+use crate::algo::heuristics::{manhattan, euclidian, linear_conflict};
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum Dir {
@@ -58,21 +58,22 @@ fn get_neighbors(size: i32, state: &Vec<i32>) -> Vec<(Dir, Vec<i32>)> {
 }
 
 // recursive graph search
-fn graph_search(size: i32, path: &mut Vec<(Dir, Vec<i32>)>, target: &Vec<i32>, cost: i32, bound: i32) -> (bool, i32) {
+fn graph_search(size: i32, path: &mut Vec<(Dir, Vec<i32>)>, target: &Vec<i32>, cost: i32, bound: i32, explored_nodes: &mut i32) -> (bool, i32) {
+	*explored_nodes += 1;
 	let node = path.last().unwrap();
-	let new_cost = cost + manhattan(size, &node.1, target);
+	let new_cost = cost + linear_conflict(size, &node.1, target);
 	
 	// eprintln!("[search node]: {:?}", node);
 	if new_cost > bound { return (false, new_cost) }
-	if node.1 == *target { return (true, new_cost) }
+	else if node.1 == *target { return (true, new_cost) }
 	// eprintln!("[neighbors]: {:?}", neighbors);
 	let mut min: i32 = std::i32::MAX;
 	for neighbour in get_neighbors(size, &node.1).iter() {
 		if !path.contains(neighbour) {
 			path.push(neighbour.clone());
-			let res = graph_search(size, path, target, cost + 1, bound);
+			let res = graph_search(size, path, target, cost + 1, bound, explored_nodes);
 			if res.0 { return (true, min) }
-			if res.1 < min { min = res.1 }
+			else if res.1 < min { min = res.1 }
 			path.pop();
 		}
 	}
@@ -80,12 +81,14 @@ fn graph_search(size: i32, path: &mut Vec<(Dir, Vec<i32>)>, target: &Vec<i32>, c
 }
 
 // loop
-pub fn resolve_puzzle(size: i32, path: &mut Vec<(Dir, Vec<i32>)>, target: &Vec<i32>) {
+pub fn resolve_puzzle(size: i32, path: &mut Vec<(Dir, Vec<i32>)>, target: &Vec<i32>, explored_nodes: &mut i32) {
 	let node = path.last().unwrap();
-	let mut bound = manhattan(size, &node.1, target);
+	let mut bound = linear_conflict(size, &node.1, target);
+	eprintln!("bound: {}", bound);
 	loop {
-		let res = graph_search(size, path, target, 0, bound);
-		if res.0 { break }
+		let res = graph_search(size, path, target, 0, bound, explored_nodes);
+		if res.0 { break; }
 		bound = res.1;
+		eprintln!("new bound: {}", bound);
 	}
 }
