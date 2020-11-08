@@ -35,6 +35,18 @@ pub fn euclidian(size: i32, state: &Vec<i32>, target: &Vec<i32>) -> i32 {
     return dist as i32;
 }
 
+pub fn hamming_distance(size: i32, state: &Vec<i32>, target: &Vec<i32>) -> i32 {
+    let mut misplaced: i32 = 0;
+    for i in 0..(size * size) {
+        if state[i as usize] != size * size {
+           if state[i as usize] != target[i as usize] {
+                misplaced += 1;
+            }
+        }
+    }
+    return misplaced;
+}
+
 fn is_conflicting(tile_a: i32, target_a: i32, tile_b: i32, target_b: i32) -> bool {
     return (tile_b > tile_a && target_b < target_a) || (tile_a > tile_b && target_a < target_b);
 }
