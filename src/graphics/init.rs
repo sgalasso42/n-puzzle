@@ -43,7 +43,7 @@ impl Visu {
             units: (args.window_size[0]) / size as f64 - (20.0 / size as f64),
         };
 
-        let line = Line::new(RED, 1.0);
+        let line = Line::new(RED, 1.5);
         
         let (win_w, win_h) = (args.window_size[0] / 2.0, args.window_size[1] / 2.0);
 
@@ -83,7 +83,7 @@ impl Visu {
                     // let r = rectangle_by_corners(0.0, 25.0, 65.0, 100.0);
                     // let ha = TextAlignment::Center;
                     // let va = TextVerticalAlignment::Top;
-                    gl.draw_text(&string, r, RED, 64 * (size), &mut glyph_cache, &c);
+                    gl.draw_text(&string, r, RED, ((64.0 * (5.0 / size as f32)) as u32) as u32, &mut glyph_cache, &c);
 
                     // let text = text::Text::new_color([0.0, 0.0, 0.0, 1.0], 64);
                     // // let width = character::CharacterCache::width(self, 64, &string);
