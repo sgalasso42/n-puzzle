@@ -6,12 +6,10 @@ use crate::board::utils::*;
 
 use opengl_graphics::{GlGraphics, OpenGL, GlyphCache};
 use piston_window::*;
-use glutin_window::GlutinWindow as Window;
 use piston::event_loop::{EventSettings, Events};
-use piston::input::{RenderArgs, RenderEvent, UpdateArgs, UpdateEvent,  PressEvent};
+use piston::input::{RenderArgs, RenderEvent, UpdateArgs, PressEvent};
 use piston::window::WindowSettings;
 use graphics::character::CharacterCache;
-use graphics::*;
 use graphics::types::FontSize;
 use graphics::{Context, Text};
 
@@ -47,7 +45,7 @@ impl Visu {
 
         let line = Line::new(RED, 1.5);
         
-        let (win_w, win_h) = (args.window_size[0] / 2.0, args.window_size[1] / 2.0);
+        // let (win_w, win_h) = (args.window_size[0] / 2.0, args.window_size[1] / 2.0);
 
         let board = self.board.clone();
         let time = self.time.clone();
@@ -65,7 +63,7 @@ impl Visu {
                 .trans(10.0, 10.0);
             
             grid.draw(&line, &c.draw_state, transform, gl);
-            let iter = grid.cells();
+            // let iter = grid.cells();
             for y in 0..size as u32 {
                 for x in 0..size as u32 {
                     let pos = grid.cell_position((x, y));
@@ -90,7 +88,7 @@ impl Visu {
     // fn update(&mut self, args: &UpdateArgs) {
     // }
 
-    fn update_board(&mut self, args: &Button, board: Vec<i32>) {
+    fn update_board(&mut self, _args: &Button, board: Vec<i32>) {
         self.board = board;
     }
 }
@@ -182,23 +180,23 @@ impl DrawText for GlGraphics {
 
         let t = Text::new_color(color, size);
         let size = t.measure(text, glyphs).unwrap();
-        fn centerW(p0: f64, p1: f64, w: f64) -> f64 {
+        fn center_w(p0: f64, p1: f64, w: f64) -> f64 {
             p0 + ((p1 - p0) / 2.0) - (w / 2.0)
         }
-        fn centerH(p0: f64, p1: f64, h: f64) -> f64 {
+        fn center_h(p0: f64, p1: f64, h: f64) -> f64 {
             p0 + ((p1 - p0) / 2.0) + (h / 2.0)
         }
 
         let x = match halign {
             TextAlignment::Left => x0,
             TextAlignment::Right => x1 - size.width,
-            TextAlignment::Center => centerW(x0, x1, size.width),
+            TextAlignment::Center => center_w(x0, x1, size.width),
         };
 
         let y = match valign {
             TextVerticalAlignment::Top => y0,
             TextVerticalAlignment::Bottom => y1 - size.height,
-            TextVerticalAlignment::Center => centerH(y0, y1, size.height),
+            TextVerticalAlignment::Center => center_h(y0, y1, size.height),
         };
 
         let transform = c.transform.trans(x, y);

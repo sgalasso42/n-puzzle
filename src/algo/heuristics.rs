@@ -1,5 +1,3 @@
-use crate::board::utils::*;
-
 pub fn manhattan(size: i32, state: &Vec<i32>, target: &Vec<i32>) -> i32 {
     let mut dist: i32 = 0;
     for i in 0..(state.len()) {
