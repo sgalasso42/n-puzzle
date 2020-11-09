@@ -15,6 +15,15 @@ use graphics::*;
 use graphics::types::FontSize;
 use graphics::{Context, Text};
 
+#[derive(Debug, Copy, Clone, PartialEq)]
+pub enum TextAlignment {
+    Left, Right, Center
+}
+#[derive(Debug, Copy, Clone, PartialEq)]
+pub enum TextVerticalAlignment {
+    Top, Bottom, Center
+}
+
 pub struct Visu {
     gl: GlGraphics,
     board: Vec<i32>,
@@ -69,12 +78,12 @@ impl Visu {
                         string = nb.to_string(); 
                     }
                     let r = [pos[0] + 10.0, pos[1] + 10.0, pos[0] + 10.0 + grid.units, pos[1] + 10.0 + grid.units];
-                    gl.draw_text(&string, r, RED, ((64.0 * (5.0 / size as f32)) as u32) as u32, &mut glyph_cache, &c);
+                    gl.draw_text(&string, r, RED, ((64.0 * (5.0 / size as f32)) as u32) as u32, TextAlignment::Center, TextVerticalAlignment::Center, &mut glyph_cache, &c);
                 }
             }
             let duration: &String = &("Duration : ".to_string() + &time + &("s".to_string()));
             let r = [10.0, 510.0, 490.0, 540.0];
-            gl.draw_text(&duration, r, RED, 32, &mut glyph_cache, &c);
+            gl.draw_text(&duration, r, RED, 32, TextAlignment::Center, TextVerticalAlignment::Center, &mut glyph_cache, &c);
         });
     }
 
@@ -148,8 +157,8 @@ trait DrawText {
         r: [f64; 4],
         color: [f32; 4],
         size: FontSize,
-        // halign: TextAlignment,
-        // valign: TextVerticalAlignment,
+        halign: TextAlignment,
+        valign: TextVerticalAlignment,
         glyphs: &mut GlyphCache,
         c: &Context,
     );
@@ -162,8 +171,8 @@ impl DrawText for GlGraphics {
         r: [f64; 4],
         color: [f32; 4],
         size: FontSize,
-        // halign: TextAlignment,
-        // valign: TextVerticalAlignment,
+        halign: TextAlignment,
+        valign: TextVerticalAlignment,
         glyphs: &mut GlyphCache,
         c: &Context,
     ) {
@@ -180,25 +189,18 @@ impl DrawText for GlGraphics {
         fn centerH(p0: f64, p1: f64, h: f64) -> f64 {
             p0 + ((p1 - p0) / 2.0) + (h / 2.0)
         }
-        let x = centerW(x0, x1, size.width);
-        // match halign {
-        //     TextAlignment::Left => x0,
-        //     TextAlignment::Right => x1 - size.width,
-        //     TextAlignment::Center => center(x0, x1, size.width),
-        // };
-        // println!("y1 - y0: {:?}", y1 - y0);
-        // println!("x1 - x0: {:?}", x1 - x0);
 
-        // println!("height: {:?}", size.height);
-        // println!("width: {:?}", size.width);
+        let x = match halign {
+            TextAlignment::Left => x0,
+            TextAlignment::Right => x1 - size.width,
+            TextAlignment::Center => centerW(x0, x1, size.width),
+        };
 
-
-        let y = centerH(y0, y1, size.height);
-        // match valign {
-        //     TextVerticalAlignment::Top => y0,
-        //     TextVerticalAlignment::Bottom => y1 - size.height,
-        //     TextVerticalAlignment::Center => center(y0, y1, size.height),
-        // };
+        let y = match valign {
+            TextVerticalAlignment::Top => y0,
+            TextVerticalAlignment::Bottom => y1 - size.height,
+            TextVerticalAlignment::Center => centerH(y0, y1, size.height),
+        };
 
         let transform = c.transform.trans(x, y);
         let draw_state = c.draw_state;
