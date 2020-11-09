@@ -61,7 +61,7 @@ fn get_neighbors(size: i32, state: &Vec<i32>) -> Vec<(Dir, Vec<i32>)> {
 fn graph_search(size: i32, path: &mut Vec<(Dir, Vec<i32>)>, target: &Vec<i32>, cost: i32, bound: i32, explored_nodes: &mut i32) -> (bool, i32) {
 	*explored_nodes += 1;
 	let node = path.last().unwrap();
-	let new_cost = cost + hamming_distance(size, &node.1, target);
+	let new_cost = cost + linear_conflict(size, &node.1, target);
 	
 	// eprintln!("[search node]: {:?}", node);
 	if new_cost > bound { return (false, new_cost) }
@@ -83,7 +83,7 @@ fn graph_search(size: i32, path: &mut Vec<(Dir, Vec<i32>)>, target: &Vec<i32>, c
 // loop
 pub fn resolve_puzzle(size: i32, path: &mut Vec<(Dir, Vec<i32>)>, target: &Vec<i32>, explored_nodes: &mut i32) {
 	let node = path.last().unwrap();
-	let mut bound = hamming_distance(size, &node.1, target);
+	let mut bound = linear_conflict(size, &node.1, target);
 	eprintln!("bound: {}", bound);
 	loop {
 		let res = graph_search(size, path, target, 0, bound, explored_nodes);
@@ -91,4 +91,18 @@ pub fn resolve_puzzle(size: i32, path: &mut Vec<(Dir, Vec<i32>)>, target: &Vec<i
 		bound = res.1;
 		eprintln!("new bound: {}", bound);
 	}
+}
+
+pub fn get_full_array(state: Vec<i32>, size: i32, sequence: &Vec<Dir>) -> Vec<Vec<i32>> {
+	let mut state_updated: Vec<i32> = state.clone();
+	let mut board_array: Vec<Vec<i32>> = Vec::new();
+	board_array.push(state.clone());
+	for pos in sequence.iter() {
+		let sd_pos: usize = slot_pos(size, &state_updated);
+		let dd_pos: (i32, i32) = fstod(sd_pos as i32, size);
+		let new_state = apply_action(size, &state_updated, dd_pos, new_position(dd_pos, movement_value(pos))).unwrap();
+		board_array.push(new_state.clone());
+		state_updated = new_state.clone();
+	}
+	return board_array;
 }
