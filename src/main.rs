@@ -7,7 +7,7 @@ use npuzzle::board::utils::{slot_pos, factorial};
 use npuzzle::algo::graph::{resolve_puzzle, Dir, get_full_array};
 use npuzzle::args::handle::{handle_args};
 use npuzzle::args::parser::{Config};
-use npuzzle::graphics::init::{graphics};
+use npuzzle::graphics::visual::{graphics};
 
 fn main() {
 	let config = Config::new();
@@ -50,7 +50,7 @@ fn main() {
 	println!("solution: {:?}", sequence);
 	println!("moves number: {:?}", path.len() - 1);
 	println!("explored nodes: {}", explored_nodes);
-	println!("possible nb of solvable states: {:?}", factorial((size * size) as u64) / 2);
+	// println!("possible nb of solvable states: {:?}", factorial((size * size) as u64) / 2);
 	println!("duration: {:?}s ({:?})", start_time.elapsed().as_secs(), start_time.elapsed());
 	
 	eprintln!("-------");

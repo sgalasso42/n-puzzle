@@ -88,7 +88,6 @@ impl Visu {
     }
 
     // fn update(&mut self, args: &UpdateArgs) {
-    //     // Rotate 2 radians per second.
     // }
 
     fn update_board(&mut self, args: &Button, board: Vec<i32>) {
