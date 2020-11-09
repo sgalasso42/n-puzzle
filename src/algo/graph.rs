@@ -61,7 +61,7 @@ fn get_neighbors(size: i32, state: &Vec<i32>) -> Vec<(Dir, Vec<i32>)> {
 fn graph_search(size: i32, path: &mut Vec<(Dir, Vec<i32>)>, target: &Vec<i32>, cost: i32, bound: i32, explored_nodes: &mut i32) -> (bool, i32) {
 	*explored_nodes += 1;
 	let node = path.last().unwrap();
-	let new_cost = cost + hamming_distance(size, &node.1, target);
+	let new_cost = cost + linear_conflict(size, &node.1, target);
 	
 	// eprintln!("[search node]: {:?}", node);
 	if new_cost > bound { return (false, new_cost) }
@@ -83,7 +83,7 @@ fn graph_search(size: i32, path: &mut Vec<(Dir, Vec<i32>)>, target: &Vec<i32>, c
 // loop
 pub fn resolve_puzzle(size: i32, path: &mut Vec<(Dir, Vec<i32>)>, target: &Vec<i32>, explored_nodes: &mut i32) {
 	let node = path.last().unwrap();
-	let mut bound = hamming_distance(size, &node.1, target);
+	let mut bound = linear_conflict(size, &node.1, target);
 	eprintln!("bound: {}", bound);
 	loop {
 		let res = graph_search(size, path, target, 0, bound, explored_nodes);

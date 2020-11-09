@@ -1,13 +1,8 @@
-// extern crate glutin_window;
 extern crate piston_window;
-
-// extern crate graphics;
 extern crate opengl_graphics;
-// extern crate piston;
 extern crate find_folder;
 
 use crate::board::utils::*;
-// use crate::graphics::text::*;
 
 use opengl_graphics::{GlGraphics, OpenGL, GlyphCache};
 use piston_window::*;
@@ -16,9 +11,7 @@ use piston::event_loop::{EventSettings, Events};
 use piston::input::{RenderArgs, RenderEvent, UpdateArgs, UpdateEvent,  PressEvent};
 use piston::window::WindowSettings;
 use graphics::character::CharacterCache;
-
 use graphics::*;
-
 use graphics::types::FontSize;
 use graphics::{Context, Text};
 
@@ -67,7 +60,6 @@ impl Visu {
             for y in 0..size as u32 {
                 for x in 0..size as u32 {
                     let pos = grid.cell_position((x, y));
-                    // let transform2 = c.transform.trans(pos[0] + 10.0 + (grid.units/2.0), pos[1] + 10.0 + (grid.units/2.0));
                     let nb = board[fdtos(x as i32, y as i32, size) as usize];
                     let string: String;
                     
@@ -77,32 +69,12 @@ impl Visu {
                         string = nb.to_string(); 
                     }
                     let r = [pos[0] + 10.0, pos[1] + 10.0, pos[0] + 10.0 + grid.units, pos[1] + 10.0 + grid.units];
-                    // let r = [0.0, 0.0, 200.0, 200.0];
-                    // println!("r {:?}", r);
-
-                    // let r = rectangle_by_corners(0.0, 25.0, 65.0, 100.0);
-                    // let ha = TextAlignment::Center;
-                    // let va = TextVerticalAlignment::Top;
                     gl.draw_text(&string, r, RED, ((64.0 * (5.0 / size as f32)) as u32) as u32, &mut glyph_cache, &c);
-
-                    // let text = text::Text::new_color([0.0, 0.0, 0.0, 1.0], 64);
-                    // // let width = character::CharacterCache::width(self, 64, &string);
-                    // // println!("width: {:?}", width);
-                    // text.draw(
-                    //     &string,
-                    //     &mut glyph_cache,
-                    //     &c.draw_state,
-                    //     transform2, gl
-                    // ).unwrap();
                 }
             }
-
-             text::Text::new_color([0.0, 0.5, 0.0, 1.0], 64).draw(
-                        &("Time : ".to_string() + &time + &("s".to_string())),
-                        &mut glyph_cache,
-                        &c.draw_state,
-                         c.transform.trans(10.0, 600.0), gl
-                    ).unwrap();
+            let duration: &String = &("Duration : ".to_string() + &time + &("s".to_string()));
+            let r = [10.0, 510.0, 490.0, 540.0];
+            gl.draw_text(&duration, r, RED, 32, &mut glyph_cache, &c);
         });
     }
 
