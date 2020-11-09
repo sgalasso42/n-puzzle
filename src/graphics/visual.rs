@@ -6,9 +6,6 @@ use crate::board::utils::*;
 
 use opengl_graphics::{GlGraphics, OpenGL, GlyphCache};
 use piston_window::*;
-use piston::event_loop::{EventSettings, Events};
-use piston::input::{RenderArgs, RenderEvent, UpdateArgs, PressEvent};
-use piston::window::WindowSettings;
 use graphics::character::CharacterCache;
 use graphics::types::FontSize;
 use graphics::{Context, Text};
