@@ -90,7 +90,7 @@ impl Visu {
     }
 }
 
-pub fn graphics(board_array: &[Vec<i32>], size: i32, time: String) {
+pub fn visualisator(board_array: &[Vec<i32>], size: i32, time: String) {
     
     let mut index: usize = 0;
     let opengl = OpenGL::V3_2;
