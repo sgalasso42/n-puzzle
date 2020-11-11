@@ -18,6 +18,7 @@ pub struct Visu {
     pub number_scale: f64,
     pub index: i32,
     pub total_moves: i32,
+    pub heuristic: String,
 }
 
 impl Visu {
@@ -30,19 +31,20 @@ impl Visu {
         let margin_top = self.margin_top;
         let margin_x = self.margin_x;
         let number_scale = self.number_scale;
-
+        
         let (win_w, win_h) = (args.window_size[0], args.window_size[1]);
-
+        
         let grid = grid::Grid {
             cols: size as u32,
             rows: size as u32,
             units: win_w / size as f64 - (margin_x * 2.0 / size as f64),
         };
-
+        
         let line = Line::new(RED, 1.5);
         
         let board = self.board.clone();
         let time = self.time.clone();
+        let heuristic = self.heuristic.clone();
         let total_moves = self.total_moves;
         let index = self.index;
 
@@ -81,8 +83,9 @@ impl Visu {
             r = [0.0, win_w + margin_top + 1.0 * 35.0, win_w, win_w + margin_top + 2.0 * 35.0];
             gl.draw_text(&duration_str, r, LIGHT_GREY, 32, TextAlignment::Center, TextVerticalAlignment::Center, &mut glyph_cache, &c);
 
+            let heuristic_str = format!("{} : {}", "Heuristic", heuristic);
             r = [0.0, win_w + margin_top + 2.0 * 35.0, win_w, win_w + margin_top + 3.0 * 35.0];
-            gl.draw_text("Heuristic :", r, LIGHT_GREY, 32, TextAlignment::Center, TextVerticalAlignment::Center, &mut glyph_cache, &c);
+            gl.draw_text(&heuristic_str, r, LIGHT_GREY, 32, TextAlignment::Center, TextVerticalAlignment::Center, &mut glyph_cache, &c);
             
             r = [0.0, win_w + margin_top + 3.0 * 35.0, win_w, win_w + margin_top + 4.0 * 35.0];
             gl.draw_text("Total number of states :", r, LIGHT_GREY, 32, TextAlignment::Center, TextVerticalAlignment::Center, &mut glyph_cache, &c);

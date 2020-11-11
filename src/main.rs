@@ -57,6 +57,6 @@ fn main() {
 
 	if config.visual == true {
 		let board_array = get_full_array(state.clone(), size, &sequence);
-		start_visual(&board_array, size, start_time.elapsed().as_secs().to_string());
+		start_visual(&board_array, size, start_time.elapsed().as_secs().to_string(), config.heuristic);
 	}
 }

@@ -6,7 +6,7 @@ use crate::visual::visu::{Visu};
 use opengl_graphics::{GlGraphics, OpenGL};
 use piston_window::*;
 
-pub fn start_visual(board_array: &[Vec<i32>], size: i32, time: String) {
+pub fn start_visual(board_array: &[Vec<i32>], size: i32, time: String, heuristic: String) {
     let mut index: usize = 0;
     let opengl = OpenGL::V3_2;
 
@@ -31,6 +31,7 @@ pub fn start_visual(board_array: &[Vec<i32>], size: i32, time: String) {
         number_scale: 5.0,
         index: 0,
         total_moves: board_array.len() as i32 - 1,
+        heuristic: heuristic,
     };
 
     let mut events = Events::new(EventSettings::new());
