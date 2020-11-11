@@ -34,6 +34,8 @@ impl Visu {
         use graphics::*;
         const GREEN: [f32; 4] = [0.0, 1.0, 0.0, 1.0];
         const RED: [f32; 4] = [1.0, 0.0, 0.0, 1.0];
+        const LIGHT_GREY: [f32; 4] = [218.0 / 255.0, 223.0 / 255.0 , 225.0 / 255.0, 1.0];
+        const DARK_GREY: [f32; 4] = [46.0 / 255.0, 49.0 / 255.0, 49.0 / 255.0, 1.0];
 
         let size = self.size;
         let margin_top = self.margin_top;
@@ -59,7 +61,7 @@ impl Visu {
         let mut glyph_cache = GlyphCache::new(font, (), TextureSettings::new()).unwrap();
 
         self.gl.draw(args.viewport(), |c, gl| {
-            clear(GREEN, gl);
+            clear(DARK_GREY, gl);
                    
             grid.draw(&line, &c.draw_state, c.transform
                 .trans(margin_x, margin_top), gl);
@@ -76,15 +78,15 @@ impl Visu {
                         string = nb.to_string(); 
                     }
                     let r = [pos[0] + margin_x, pos[1] + margin_top, pos[0] + margin_x + grid.units, pos[1] + margin_top + grid.units];
-                    gl.draw_text(&string, r, RED, ((64.0 * (number_scale / size as f64)) as u32) as u32, TextAlignment::Center, TextVerticalAlignment::Center, &mut glyph_cache, &c);
+                    gl.draw_text(&string, r, LIGHT_GREY, ((64.0 * (number_scale / size as f64)) as u32) as u32, TextAlignment::Center, TextVerticalAlignment::Center, &mut glyph_cache, &c);
                 }
             }
             let duration: &String = &("Duration : ".to_string() + &time + &("s".to_string()));
             let mut r = [margin_x, 0.0, win_w - margin_x, margin_top];
-            gl.draw_text("NPUZZLE", r, RED, 64, TextAlignment::Center, TextVerticalAlignment::Center, &mut glyph_cache, &c);
+            gl.draw_text("NPUZZLE", r, LIGHT_GREY, 64, TextAlignment::Center, TextVerticalAlignment::Center, &mut glyph_cache, &c);
             
             r = [margin_x, win_w + margin_top, win_w - margin_x, win_w + margin_top + 20.0];
-            gl.draw_text(&duration, r, RED, 32, TextAlignment::Left, TextVerticalAlignment::Center, &mut glyph_cache, &c);
+            gl.draw_text(&duration, r, LIGHT_GREY, 32, TextAlignment::Left, TextVerticalAlignment::Center, &mut glyph_cache, &c);
         });
     }
 
