@@ -23,7 +23,10 @@ pub struct Visu {
     gl: GlGraphics,
     board: Vec<i32>,
     size: i32,
-    time: String
+    time: String,
+    margin_top: f64,
+    margin_x: f64,
+    number_scale: f64,
 }
 
 impl Visu {
@@ -33,11 +36,16 @@ impl Visu {
         const RED: [f32; 4] = [1.0, 0.0, 0.0, 1.0];
 
         let size = self.size;
+        let margin_top = self.margin_top;
+        let margin_x = self.margin_x;
+        let number_scale = self.number_scale;
+
+        let (win_w, win_h) = (args.window_size[0], args.window_size[1]);
 
         let grid = grid::Grid {
             cols: size as u32,
             rows: size as u32,
-            units: (args.window_size[0]) / size as f64 - (20.0 / size as f64),
+            units: win_w / size as f64 - (margin_x * 2.0 / size as f64),
         };
 
         let line = Line::new(RED, 1.5);
@@ -52,12 +60,10 @@ impl Visu {
 
         self.gl.draw(args.viewport(), |c, gl| {
             clear(GREEN, gl);
-            
-            let transform = c
-                .transform
-                .trans(10.0, 10.0);
-            
-            grid.draw(&line, &c.draw_state, transform, gl);
+                   
+            grid.draw(&line, &c.draw_state, c.transform
+                .trans(margin_x, margin_top), gl);
+
             for y in 0..size as u32 {
                 for x in 0..size as u32 {
                     let pos = grid.cell_position((x, y));
@@ -69,13 +75,16 @@ impl Visu {
                     } else {
                         string = nb.to_string(); 
                     }
-                    let r = [pos[0] + 10.0, pos[1] + 10.0, pos[0] + 10.0 + grid.units, pos[1] + 10.0 + grid.units];
-                    gl.draw_text(&string, r, RED, ((64.0 * (5.0 / size as f32)) as u32) as u32, TextAlignment::Center, TextVerticalAlignment::Center, &mut glyph_cache, &c);
+                    let r = [pos[0] + margin_x, pos[1] + margin_top, pos[0] + margin_x + grid.units, pos[1] + margin_top + grid.units];
+                    gl.draw_text(&string, r, RED, ((64.0 * (number_scale / size as f64)) as u32) as u32, TextAlignment::Center, TextVerticalAlignment::Center, &mut glyph_cache, &c);
                 }
             }
             let duration: &String = &("Duration : ".to_string() + &time + &("s".to_string()));
-            let r = [10.0, 510.0, 490.0, 540.0];
-            gl.draw_text(&duration, r, RED, 32, TextAlignment::Center, TextVerticalAlignment::Center, &mut glyph_cache, &c);
+            let mut r = [margin_x, 0.0, win_w - margin_x, margin_top];
+            gl.draw_text("NPUZZLE", r, RED, 64, TextAlignment::Center, TextVerticalAlignment::Center, &mut glyph_cache, &c);
+            
+            r = [margin_x, win_w + margin_top, win_w - margin_x, win_w + margin_top + 20.0];
+            gl.draw_text(&duration, r, RED, 32, TextAlignment::Left, TextVerticalAlignment::Center, &mut glyph_cache, &c);
         });
     }
 
@@ -91,7 +100,7 @@ pub fn visualisator(board_array: &[Vec<i32>], size: i32, time: String) {
 
     let mut window: PistonWindow = WindowSettings::new(
                 "npuzzle",
-                [500, 700]
+                [500, 800]
             )
             .graphics_api(opengl)
             .fullscreen(false)
@@ -105,6 +114,9 @@ pub fn visualisator(board_array: &[Vec<i32>], size: i32, time: String) {
         board: board_array[index].clone(),
         size: size,
         time: time,
+        margin_top: 110.0,
+        margin_x: 10.0,
+        number_scale: 5.0,
     };
 
     let mut events = Events::new(EventSettings::new());
