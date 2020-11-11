@@ -86,7 +86,20 @@ impl Visu {
             gl.draw_text("NPUZZLE", r, LIGHT_GREY, 64, TextAlignment::Center, TextVerticalAlignment::Center, &mut glyph_cache, &c);
             
             r = [margin_x, win_w + margin_top, win_w - margin_x, win_w + margin_top + 20.0];
-            gl.draw_text(&duration, r, LIGHT_GREY, 32, TextAlignment::Left, TextVerticalAlignment::Center, &mut glyph_cache, &c);
+            gl.draw_text(&duration, r, LIGHT_GREY, 32, TextAlignment::Center, TextVerticalAlignment::Center, &mut glyph_cache, &c);
+
+            r = [margin_x, win_w + margin_top + 40.0, win_w - margin_x, win_w + margin_top + 60.0];
+            gl.draw_text("Heuristic :", r, LIGHT_GREY, 32, TextAlignment::Center, TextVerticalAlignment::Center, &mut glyph_cache, &c);
+            
+            r = [margin_x, win_w + margin_top + 80.0, win_w - margin_x, win_w + margin_top + 100.0];
+            gl.draw_text("Total number of states :", r, LIGHT_GREY, 32, TextAlignment::Center, TextVerticalAlignment::Center, &mut glyph_cache, &c);
+            
+            r = [margin_x, win_w + margin_top + 120.0, win_w - margin_x, win_w + margin_top + 140.0];
+            gl.draw_text("Maximum number of states :", r, LIGHT_GREY, 32, TextAlignment::Center, TextVerticalAlignment::Center, &mut glyph_cache, &c);
+            
+            r = [margin_x, win_w + margin_top + 160.0, win_w - margin_x, win_w + margin_top + 180.0];
+            gl.draw_text("Number of moves :", r, LIGHT_GREY, 32, TextAlignment::Center, TextVerticalAlignment::Center, &mut glyph_cache, &c);
+
         });
     }
 
@@ -102,7 +115,7 @@ pub fn visualisator(board_array: &[Vec<i32>], size: i32, time: String) {
 
     let mut window: PistonWindow = WindowSettings::new(
                 "npuzzle",
-                [500, 800]
+                [500, 810]
             )
             .graphics_api(opengl)
             .fullscreen(false)
