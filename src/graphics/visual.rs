@@ -27,12 +27,13 @@ pub struct Visu {
     margin_top: f64,
     margin_x: f64,
     number_scale: f64,
+    index: i32,
+    total_moves: i32,
 }
 
 impl Visu {
     fn render(&mut self, args: &RenderArgs) {
         use graphics::*;
-        const GREEN: [f32; 4] = [0.0, 1.0, 0.0, 1.0];
         const RED: [f32; 4] = [1.0, 0.0, 0.0, 1.0];
         const LIGHT_GREY: [f32; 4] = [218.0 / 255.0, 223.0 / 255.0 , 225.0 / 255.0, 1.0];
         const DARK_GREY: [f32; 4] = [46.0 / 255.0, 49.0 / 255.0, 49.0 / 255.0, 1.0];
@@ -54,7 +55,9 @@ impl Visu {
         
         let board = self.board.clone();
         let time = self.time.clone();
-        
+        let total_moves = self.total_moves;
+        let index = self.index;
+
         let assets = find_folder::Search::ParentsThenKids(3, 3)
         .for_folder("assets").unwrap();
         let ref font = assets.join("font.ttf");
@@ -70,41 +73,45 @@ impl Visu {
                 for x in 0..size as u32 {
                     let pos = grid.cell_position((x, y));
                     let nb = board[fdtos(x as i32, y as i32, size) as usize];
-                    let string: String;
-                    
-                    if nb == size * size {
-                        string = "*".to_string();
-                    } else {
-                        string = nb.to_string(); 
+  
+                    if nb != size * size {
+                        let string: String = nb.to_string();
+                        let r = [pos[0] + margin_x, pos[1] + margin_top, pos[0] + margin_x + grid.units, pos[1] + margin_top + grid.units];
+                        gl.draw_text(&string, r, LIGHT_GREY, ((64.0 * (number_scale / size as f64)) as u32) as u32, TextAlignment::Center, TextVerticalAlignment::Center, &mut glyph_cache, &c);
                     }
-                    let r = [pos[0] + margin_x, pos[1] + margin_top, pos[0] + margin_x + grid.units, pos[1] + margin_top + grid.units];
-                    gl.draw_text(&string, r, LIGHT_GREY, ((64.0 * (number_scale / size as f64)) as u32) as u32, TextAlignment::Center, TextVerticalAlignment::Center, &mut glyph_cache, &c);
                 }
-            }
-            let duration: &String = &("Duration : ".to_string() + &time + &("s".to_string()));
+            }        
+            
             let mut r = [margin_x, 0.0, win_w - margin_x, margin_top];
             gl.draw_text("NPUZZLE", r, LIGHT_GREY, 64, TextAlignment::Center, TextVerticalAlignment::Center, &mut glyph_cache, &c);
             
-            r = [margin_x, win_w + margin_top, win_w - margin_x, win_w + margin_top + 20.0];
-            gl.draw_text(&duration, r, LIGHT_GREY, 32, TextAlignment::Center, TextVerticalAlignment::Center, &mut glyph_cache, &c);
+            let move_str = format!("{} : {}/{}", "Move", index.to_string(), total_moves.to_string());
+            r = [0.0, win_w + margin_top, win_w, win_w + margin_top + 1.0 * 35.0];
+            gl.draw_text(&move_str, r, LIGHT_GREY, 32, TextAlignment::Center, TextVerticalAlignment::Center, &mut glyph_cache, &c);
 
-            r = [margin_x, win_w + margin_top + 40.0, win_w - margin_x, win_w + margin_top + 60.0];
+            let duration_str = format!("{} : {}s", "Duration", time);
+            r = [0.0, win_w + margin_top + 1.0 * 35.0, win_w, win_w + margin_top + 2.0 * 35.0];
+            gl.draw_text(&duration_str, r, LIGHT_GREY, 32, TextAlignment::Center, TextVerticalAlignment::Center, &mut glyph_cache, &c);
+
+            r = [0.0, win_w + margin_top + 2.0 * 35.0, win_w, win_w + margin_top + 3.0 * 35.0];
             gl.draw_text("Heuristic :", r, LIGHT_GREY, 32, TextAlignment::Center, TextVerticalAlignment::Center, &mut glyph_cache, &c);
             
-            r = [margin_x, win_w + margin_top + 80.0, win_w - margin_x, win_w + margin_top + 100.0];
+            r = [0.0, win_w + margin_top + 3.0 * 35.0, win_w, win_w + margin_top + 4.0 * 35.0];
             gl.draw_text("Total number of states :", r, LIGHT_GREY, 32, TextAlignment::Center, TextVerticalAlignment::Center, &mut glyph_cache, &c);
             
-            r = [margin_x, win_w + margin_top + 120.0, win_w - margin_x, win_w + margin_top + 140.0];
+            r = [0.0, win_w + margin_top + 4.0 * 35.0, win_w, win_w + margin_top + 5.0 * 35.0];
             gl.draw_text("Maximum number of states :", r, LIGHT_GREY, 32, TextAlignment::Center, TextVerticalAlignment::Center, &mut glyph_cache, &c);
             
-            r = [margin_x, win_w + margin_top + 160.0, win_w - margin_x, win_w + margin_top + 180.0];
-            gl.draw_text("Number of moves :", r, LIGHT_GREY, 32, TextAlignment::Center, TextVerticalAlignment::Center, &mut glyph_cache, &c);
+            let moves_str = format!("{} : {}", "Number of moves", total_moves.to_string());
+            r = [0.0, win_w + margin_top + 5.0 * 35.0, win_w, win_w + margin_top + 6.0 * 35.0];
+            gl.draw_text(&moves_str, r, LIGHT_GREY, 32, TextAlignment::Center, TextVerticalAlignment::Center, &mut glyph_cache, &c);
 
         });
     }
 
-    fn update_board(&mut self, _args: &Button, board: Vec<i32>) {
+    fn update_board(&mut self, _args: &Button, board: Vec<i32>, index: usize) {
         self.board = board;
+        self.index = index as i32;
     }
 }
 
@@ -115,7 +122,7 @@ pub fn visualisator(board_array: &[Vec<i32>], size: i32, time: String) {
 
     let mut window: PistonWindow = WindowSettings::new(
                 "npuzzle",
-                [500, 810]
+                [500, 835]
             )
             .graphics_api(opengl)
             .fullscreen(false)
@@ -132,6 +139,8 @@ pub fn visualisator(board_array: &[Vec<i32>], size: i32, time: String) {
         margin_top: 110.0,
         margin_x: 10.0,
         number_scale: 5.0,
+        index: 0,
+        total_moves: board_array.len() as i32 - 1,
     };
 
     let mut events = Events::new(EventSettings::new());
@@ -145,13 +154,13 @@ pub fn visualisator(board_array: &[Vec<i32>], size: i32, time: String) {
                 Button::Keyboard(Key::Right) => {
                     if index < board_array.len() - 1 {
                         index += 1;
-                        visu.update_board(&args, board_array[index].clone());
+                        visu.update_board(&args, board_array[index].clone(), index);
                     }
                 },
                 Button::Keyboard(Key::Left) => {
                     if index > 0 {
                         index -= 1;
-                        visu.update_board(&args, board_array[index].clone());
+                        visu.update_board(&args, board_array[index].clone(), index);
                     }
                 },
                 _ => {},
