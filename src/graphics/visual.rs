@@ -42,8 +42,6 @@ impl Visu {
 
         let line = Line::new(RED, 1.5);
         
-        // let (win_w, win_h) = (args.window_size[0] / 2.0, args.window_size[1] / 2.0);
-
         let board = self.board.clone();
         let time = self.time.clone();
         
@@ -60,7 +58,6 @@ impl Visu {
                 .trans(10.0, 10.0);
             
             grid.draw(&line, &c.draw_state, transform, gl);
-            // let iter = grid.cells();
             for y in 0..size as u32 {
                 for x in 0..size as u32 {
                     let pos = grid.cell_position((x, y));
@@ -81,9 +78,6 @@ impl Visu {
             gl.draw_text(&duration, r, RED, 32, TextAlignment::Center, TextVerticalAlignment::Center, &mut glyph_cache, &c);
         });
     }
-
-    // fn update(&mut self, args: &UpdateArgs) {
-    // }
 
     fn update_board(&mut self, _args: &Button, board: Vec<i32>) {
         self.board = board;
@@ -118,10 +112,6 @@ pub fn visualisator(board_array: &[Vec<i32>], size: i32, time: String) {
         if let Some(args) = e.render_args() {
             visu.render(&args);
         }
-
-        // if let Some(args) = e.update_args() {
-        //     visu.update(&args);
-        // }
 
         if let Some(args) = e.press_args() {
             match args {
