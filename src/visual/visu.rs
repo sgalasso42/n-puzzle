@@ -23,8 +23,8 @@ pub struct Visu {
 impl Visu {
     pub fn render(&mut self, args: &RenderArgs) {
         const RED: [f32; 4] = [1.0, 0.0, 0.0, 1.0];
-        const LIGHT_GREY: [f32; 4] = [218.0 / 255.0, 223.0 / 255.0 , 225.0 / 255.0, 1.0];
-        const DARK_GREY: [f32; 4] = [46.0 / 255.0, 49.0 / 255.0, 49.0 / 255.0, 1.0];
+        const LIGHT_GREY: [f32; 4] = [0.85, 0.85 , 0.88, 1.0];
+        const DARK_GREY: [f32; 4] = [0.18, 0.19, 0.19, 1.0];
 
         let size = self.size;
         let margin_top = self.margin_top;
