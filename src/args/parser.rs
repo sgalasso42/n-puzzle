@@ -8,7 +8,6 @@ pub struct Config {
 	pub iterations: i32,
 	pub heuristic: String,
 	pub solvable: bool,
-	pub unsolvable: bool,
 	pub visual: bool
 }
 
@@ -102,8 +101,7 @@ impl Config {
 			_ => "wtf".to_string(),
 		};
 		
-		let solvable: bool = matches.is_present("solvable");
-		let unsolvable: bool = matches.is_present("unsolvable") && solvable == false;
+		let solvable: bool = matches.is_present("solvable") || (!matches.is_present("unsolvable") && !matches.is_present("solvable"));
 		let visual: bool = matches.is_present("visual") && size < 15;
 		
 		Ok(Config {
@@ -112,7 +110,6 @@ impl Config {
 			iterations: iterations,
 			heuristic: heuristic,
 			solvable: solvable,
-			unsolvable: unsolvable,
 			visual: visual
 		})
 	}

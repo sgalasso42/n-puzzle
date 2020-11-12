@@ -29,7 +29,7 @@ fn load_file(file: &String) -> (i32, Vec<i32>) {
 
 pub fn handle_args(config: &Config) -> (i32, Vec<i32>) {
 	if config.file.is_empty() {
-		return board_generate(config.size, config.iterations)
+		return board_generate(config.size, config.iterations, config.solvable)
 	} else {
 		return load_file(&config.file)
 	}
