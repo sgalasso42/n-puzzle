@@ -7,7 +7,7 @@ use npuzzle::board::utils::{slot_pos, factorial};
 use npuzzle::algo::graph::{resolve_puzzle, Dir, get_full_array};
 use npuzzle::args::handle::{handle_args};
 use npuzzle::args::parser::{Config};
-use npuzzle::graphics::visual::{visualisator};
+use npuzzle::visual::render::{start_visual};
 
 fn main() {
 	let config = Config::new();
@@ -57,6 +57,6 @@ fn main() {
 
 	if config.visual == true {
 		let board_array = get_full_array(state.clone(), size, &sequence);
-		visualisator(&board_array, size, start_time.elapsed().as_secs().to_string());
+		start_visual(&board_array, size, start_time.elapsed().as_secs().to_string(), config.heuristic);
 	}
 }
