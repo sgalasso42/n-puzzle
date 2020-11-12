@@ -15,6 +15,7 @@ fn main() {
 
 	println!("size: {:?}", size);
 	println!("state: {:?}", state);
+	println!("iterations: {:?}", config.iterations);
 	
 	let slot_pos = slot_pos(size, &state);
 	println!("slot_pos: {}", slot_pos);

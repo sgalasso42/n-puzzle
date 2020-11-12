@@ -82,14 +82,30 @@ impl Config {
 			.arg(visual_option);
 		
 		let matches = app.get_matches_from_safe(args)?;
-		let file: String = matches.value_of("file").unwrap_or("").to_string();
-		let size: i32 = matches.value_of("size").unwrap_or("3").parse().unwrap_or(3);
-		let iterations: i32 = matches.value_of("iterations").unwrap_or("1000").parse().unwrap_or(1000);
-		let heuristic: String = matches.value_of("heuristic").unwrap_or("test").to_string();
-		let solvable: bool = matches.is_present("solvable");
-		let unsolvable: bool = matches.is_present("unsolvable");
-		let visual: bool = matches.is_present("visual");
 
+		let file: String = matches.value_of("file").unwrap_or("").to_string();
+
+		let mut size: i32 = matches.value_of("size").unwrap_or("3").parse().unwrap_or(3);
+		if !(2..101).contains(&size) {
+			size = 3;
+		}
+		let mut iterations: i32 = matches.value_of("iterations").unwrap_or("1000").parse().unwrap_or(1000);
+		if !(0..1000000).contains(&iterations) {
+			iterations = 1000;
+		}
+
+		let heuristic: String = match matches.value_of("heuristic").unwrap_or("manhattan") {
+			"manhattan" => "manhattan".to_string(),
+			"euclidian" => "euclidian".to_string(),
+			"hamming" => "hamming".to_string(),
+			"linear" => "linear".to_string(),
+			_ => "wtf".to_string(),
+		};
+		
+		let solvable: bool = matches.is_present("solvable");
+		let unsolvable: bool = matches.is_present("unsolvable") && solvable == false;
+		let visual: bool = matches.is_present("visual") && size < 15;
+		
 		Ok(Config {
 			file: file,
 			size: size,
