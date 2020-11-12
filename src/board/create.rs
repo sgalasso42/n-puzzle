@@ -21,12 +21,11 @@ pub fn snail_generate(size: i32) -> Vec<i32> {
 }
 
 // generate a game board array of a given size
-pub fn board_generate(s: i32, iterations: i32) -> (i32, Vec<i32>) {
+pub fn board_generate(s: i32, iterations: i32, solvable: bool) -> (i32, Vec<i32>) {
 	/*
 	* Creates a game board
 	* @return the generated game board
 	*/
-	// let s: i32 = size.parse().unwrap_or(0);
 	let mut board: Vec<i32> = snail_generate(s);
 	
 	let mut i: i32 = 0;
@@ -58,5 +57,17 @@ pub fn board_generate(s: i32, iterations: i32) -> (i32, Vec<i32>) {
 		i += 1
 	}
 
+	if !solvable {
+		if board[0] == s * s || board[1] == s * s {
+			let tmp: i32 = board[(s * s)  as usize - 1];
+			board[(s * s) as usize - 1] = board[(s * s) as usize - 2];
+			board[(s * s) as usize - 2] = tmp;
+		}
+		else {
+			let tmp: i32 = board[0];
+			board[0] = board[1];
+			board[1] = tmp;
+		}
+	}
 	return (s, board);
 }

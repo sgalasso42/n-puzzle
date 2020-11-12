@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
     extern crate npuzzle;
-    use npuzzle::board::check::*;
+    use npuzzle::board::check::{is_solvable};
 
     #[test]
     fn solvable_1() {
