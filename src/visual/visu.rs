@@ -32,7 +32,7 @@ impl Visu {
         let margin_x = self.margin_x;
         let number_scale = self.number_scale;
         
-        let (win_w, win_h) = (args.window_size[0], args.window_size[1]);
+        let win_w = args.window_size[0];
         
         let grid = grid::Grid {
             cols: size as u32,

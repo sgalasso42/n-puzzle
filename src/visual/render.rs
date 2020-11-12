@@ -3,23 +3,36 @@ extern crate opengl_graphics;
 
 use crate::visual::visu::{Visu};
 
-use opengl_graphics::{GlGraphics, OpenGL};
+use std::panic;
 use piston_window::*;
+use opengl_graphics::{GlGraphics, OpenGL};
 
 pub fn start_visual(board_array: &[Vec<i32>], size: i32, time: String, heuristic: String) {
     let mut index: usize = 0;
     let opengl = OpenGL::V3_2;
 
-    let mut window: PistonWindow = WindowSettings::new(
-                "npuzzle",
-                [500, 835]
-            )
-            .graphics_api(opengl)
-            .fullscreen(false)
-            .exit_on_esc(true)
-            .resizable(false)
-            .build()
-            .unwrap();
+    panic::set_hook(Box::new(|_info| {
+        // do nothing
+    }));
+
+    let result = panic::catch_unwind(|| {WindowSettings::new(
+        "npuzzle",
+        [500, 835])
+        .graphics_api(opengl)
+        .fullscreen(false)
+        .exit_on_esc(true)
+        .resizable(false)
+        .build()
+        .unwrap()
+    });
+
+    let mut window: PistonWindow = match result {
+        Ok(window) => window,
+        Err(_e) => {
+            println!("There was an error while creating the window");
+            panic!("There was an error while creating the window");
+        },
+    };
 
     let mut visu = Visu {
         gl: GlGraphics::new(opengl),
