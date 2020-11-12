@@ -56,7 +56,6 @@ impl Visu {
             clear(GREEN, gl);
             
             let transform = c
-                .transform
                 .trans(10.0, 10.0);
             
             grid.draw(&line, &c.draw_state, transform, gl);
