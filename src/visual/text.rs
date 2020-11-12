@@ -1,20 +1,24 @@
-extern crate piston_window;
 extern crate opengl_graphics;
+extern crate piston_window;
 
-use opengl_graphics::{GlGraphics, GlyphCache};
-use piston_window::*;
 use graphics::character::CharacterCache;
 use graphics::types::FontSize;
 use graphics::{Context, Text};
+use opengl_graphics::{GlGraphics, GlyphCache};
+use piston_window::*;
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum TextAlignment {
-    Left, Right, Center
+    Left,
+    Right,
+    Center,
 }
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum TextVerticalAlignment {
-    Top, Bottom, Center
+    Top,
+    Bottom,
+    Center,
 }
 
 pub trait DrawText {
@@ -75,29 +79,21 @@ impl DrawText for GlGraphics {
     }
 }
 
-
 pub trait MeasureText {
-    fn measure<C>(
-        &self, 
-        text: &str, 
-        cache: &mut C) -> Result<Size, ()>
+    fn measure<C>(&self, text: &str, cache: &mut C) -> Result<Size, ()>
     where
         C: CharacterCache;
 }
 
 impl MeasureText for Text {
-    fn measure<C>(
-        &self, 
-        text: &str, 
-        cache: &mut C) -> Result<Size, ()>
+    fn measure<C>(&self, text: &str, cache: &mut C) -> Result<Size, ()>
     where
         C: CharacterCache,
     {
         let mut w = 0.0;
         let mut h = 0.0;
         for ch in text.chars() {
-            let character = cache.character(self.font_size, ch)
-                .ok().unwrap();
+            let character = cache.character(self.font_size, ch).ok().unwrap();
             let (left, top) = (character.left(), character.top());
             w += character.advance_width() + left;
             h = (character.advance_height() + top).max(h);

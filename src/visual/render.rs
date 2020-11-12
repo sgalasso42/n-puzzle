@@ -1,11 +1,11 @@
-extern crate piston_window;
 extern crate opengl_graphics;
+extern crate piston_window;
 
-use crate::visual::visu::{Visu};
+use crate::visual::visu::Visu;
 
-use std::panic;
-use piston_window::*;
 use opengl_graphics::{GlGraphics, OpenGL};
+use piston_window::*;
+use std::panic;
 
 pub fn start_visual(board_array: &[Vec<i32>], size: i32, time: String, heuristic: String) {
     let mut index: usize = 0;
@@ -15,15 +15,14 @@ pub fn start_visual(board_array: &[Vec<i32>], size: i32, time: String, heuristic
         // do nothing
     }));
 
-    let result = panic::catch_unwind(|| {WindowSettings::new(
-        "npuzzle",
-        [500, 835])
-        .graphics_api(opengl)
-        .fullscreen(false)
-        .exit_on_esc(true)
-        .resizable(false)
-        .build()
-        .unwrap()
+    let result = panic::catch_unwind(|| {
+        WindowSettings::new("npuzzle", [500, 835])
+            .graphics_api(opengl)
+            .fullscreen(false)
+            .exit_on_esc(true)
+            .resizable(false)
+            .build()
+            .unwrap()
     });
 
     let mut window: PistonWindow = match result {
@@ -31,7 +30,7 @@ pub fn start_visual(board_array: &[Vec<i32>], size: i32, time: String, heuristic
         Err(_e) => {
             println!("There was an error while creating the window");
             panic!("There was an error while creating the window");
-        },
+        }
     };
 
     let mut visu = Visu {
@@ -60,14 +59,14 @@ pub fn start_visual(board_array: &[Vec<i32>], size: i32, time: String, heuristic
                         index += 1;
                         visu.update_board(&args, board_array[index].clone(), index);
                     }
-                },
+                }
                 Button::Keyboard(Key::Left) => {
                     if index > 0 {
                         index -= 1;
                         visu.update_board(&args, board_array[index].clone(), index);
                     }
-                },
-                _ => {},
+                }
+                _ => {}
             }
         }
     }
