@@ -18,30 +18,28 @@ fn load_file(file: &String) -> (u16, Vec<u16>) {
         let offset = line.as_ref().expect("Error: Bad file format")[..].find('#').unwrap_or(line.as_ref().unwrap().len());
         let drained: String = line.unwrap().drain(..offset).collect();
         let split: Vec<_> = drained.split_whitespace().map(|s| s.to_string()).collect();
-        if size > 0 && split.len() != size as usize {
+        if size > 0 && split.len() != size as usize && split.len() != 0 {
             panic!("Error: Bad map format");
         }
         for el in split.iter() {
-            if el != "" {
-                match el.parse::<i32>() {
-                    Ok(value) => match size == 0  {
-                        true => {
-                            if split.len() == 1 && value > 0 && value < 255 {
-                                size = value as u16;
-                            } else {
-                                panic!("Error: Bad value '{}', please indicate a valid map size", value);
-                            }
-                        },
-                        false => {
-                            if value >= 0 && (value as u16) < size * size && !values.contains(&(value as u16)) {
-                                values.push(value as u16)
-                            } else {
-                                panic!("Error: Bad value '{}', values are not usable", value);
-                            }
-                        },
+            match el.parse::<i32>() {
+                Ok(value) => match size == 0  {
+                    true => {
+                        if split.len() == 1 && value >= 2 && value < 100 {
+                            size = value as u16;
+                        } else {
+                            panic!("Error: Bad value '{}', please indicate a valid map size", value);
+                        }
                     },
-                    Err(_) => panic!("Error: Bad character"),
-                }
+                    false => {
+                        if value >= 0 && (value as u16) < size * size && !values.contains(&(value as u16)) {
+                            values.push(value as u16)
+                        } else {
+                            panic!("Error: Bad value '{}', values are not usable", value);
+                        }
+                    },
+                },
+                Err(_) => panic!("Error: Bad character"),
             }
         }
     }
