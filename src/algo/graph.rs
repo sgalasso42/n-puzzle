@@ -49,7 +49,7 @@ fn get_neighbors(size: u16, state: &Vec<u16>) -> Vec<(Dir, Vec<u16>)> {
 	return neighbors;
 }
 
-fn graph_search(size: u16, path: &mut Vec<(Dir, Vec<u16>)>, target: &Vec<u16>, cost: u32, bound: u32, explored_nodes: &mut u32, config: &Config) -> (bool, u32) {
+fn graph_search(size: u16, path: &mut Vec<(Dir, Vec<u16>)>, target: &Vec<u16>, cost: u32, bound: u32, explored_nodes: &mut u32, max_path_len: &mut u16, config: &Config) -> (bool, u32) {
 	*explored_nodes += 1;
 	let node = path.last().expect("Error: The path is empty");
 	let new_cost: u32 = match config.search_type {
@@ -73,7 +73,10 @@ fn graph_search(size: u16, path: &mut Vec<(Dir, Vec<u16>)>, target: &Vec<u16>, c
 	for neighbour in get_neighbors(size, &node.1).iter() {
 		if !path.contains(neighbour) {
 			path.push(neighbour.clone());
-			match graph_search(size, path, target, cost + 1, bound, explored_nodes, config) {
+			if path.len() as u16 > *max_path_len {
+				*max_path_len = path.len() as u16;
+			}
+			match graph_search(size, path, target, cost + 1, bound, explored_nodes, max_path_len, config) {
 				(res, _) if res => return (true, min),
 				(_, val) if val < min => min = val,
 				(_, _) => {}
@@ -84,7 +87,7 @@ fn graph_search(size: u16, path: &mut Vec<(Dir, Vec<u16>)>, target: &Vec<u16>, c
 	return (false, min);
 }
 
-pub fn resolve_puzzle(size: u16, path: &mut Vec<(Dir, Vec<u16>)>, target: &Vec<u16>, explored_nodes: &mut u32, config: &Config) {
+pub fn resolve_puzzle(size: u16, path: &mut Vec<(Dir, Vec<u16>)>, target: &Vec<u16>, explored_nodes: &mut u32, max_path_len: &mut u16, config: &Config) {
 	let node = path.last().expect("Error: The path has not been initialized");
 	let mut bound = match config.search_type {
 		SearchType::Normal | SearchType::Greedy => {
@@ -96,7 +99,7 @@ pub fn resolve_puzzle(size: u16, path: &mut Vec<(Dir, Vec<u16>)>, target: &Vec<u
 	};
 	println!("bound: {}", bound);
 	loop {
-		match graph_search(size, path, target, 0, bound, explored_nodes, config) {
+		match graph_search(size, path, target, 0, bound, explored_nodes, max_path_len, config) {
 			res if res.0 => break,
 			res => bound = res.1
 		}
