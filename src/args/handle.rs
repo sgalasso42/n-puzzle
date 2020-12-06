@@ -4,11 +4,11 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::io::BufReader;
 
-fn load_file(file: &String) -> (i32, Vec<i32>) {
+fn load_file(file: &String) -> (i8, Vec<i8>) {
     let file = File::open(file).expect("error: file not found");
     let lines: Vec<_> = BufReader::new(file).lines().collect();
-    let mut size = 0;
-    let mut values: Vec<i32> = Vec::new();
+    let mut size: i8 = 0;
+    let mut values: Vec<i8> = Vec::new();
     for (i, line) in lines.into_iter().enumerate() {
         for num in line.expect("error: bad format").split_whitespace() {
             if i == 0 {
@@ -27,9 +27,9 @@ fn load_file(file: &String) -> (i32, Vec<i32>) {
     return (size, values);
 }
 
-pub fn handle_args(config: &Config) -> (i32, Vec<i32>) {
+pub fn handle_args(config: &Config) -> (i8, Vec<i8>) {
     if config.file.is_empty() {
-        return board_generate(config.size, config.iterations, config.solvable);
+        return board_generate(config.size as i8, config.iterations as i8, config.solvable);
     } else {
         return load_file(&config.file);
     }
