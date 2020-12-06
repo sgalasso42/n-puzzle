@@ -25,38 +25,35 @@ pub fn get_full_array(state: Vec<i8>, size: i8, sequence: &Vec<Dir>) -> Vec<Vec<
 
 fn main() {
 	let config = Config::new();
-	// println!("config: {:?}", config);
 	let (size, state) = handle_args(&config);
 
-	println!("size: {:?}", size);
-	println!("state: {:?}", state);
-	println!("iterations: {:?}", config.iterations);
-	
-	let slot_pos: i8 = slot_pos(size, &state);
-	println!("slot_pos: {}", slot_pos);
+	println!("First state: {:?}", state);
+	println!("Size: {}", size);
+	println!("Iterations: {}", config.iterations);
+	println!("Heuristic: {}", config.heuristic);
+	println!("Search type: {}", config.search_type);
 
 	let solvable: bool = is_solvable(size, state.clone());
-	println!("solvable: {:?}", solvable);
+	println!("Solvable: {:?}", solvable);
 
 	if !solvable {
 		panic!("error: puzzle not solvable")
 	}
 
 	let target = snail_generate(size);
-	println!("target: {:?}", target);
+	println!("Target: {:?}", target);
 
 	let mut path: Vec<(Dir, Vec<i8>)> = Vec::new();
 	path.push((Dir::None, state.clone()));
 
-	eprintln!("-------");
+	println!("-------");
 	
 	let start_time = Instant::now();
 	let mut explored_nodes: u32 = 0;
+
 	resolve_puzzle(size, &mut path, &target, &mut explored_nodes);
-	// use crate::npuzzle::algo::heuristics::{linear_conflict};
-	// linear_conflict(size, &(path.last().unwrap().1), &target);
 	
-	eprintln!("-------");
+	println!("-------");
 	
 	let mut sequence = Vec::new();
 	for node in path.iter() {
