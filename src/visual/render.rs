@@ -12,7 +12,6 @@ pub fn start_visual(board_array: &[Vec<i32>], size: i32, time: String, heuristic
     let opengl = OpenGL::V3_2;
 
     panic::set_hook(Box::new(|_info| {
-        // do nothing
     }));
 
     let result = panic::catch_unwind(|| {
@@ -29,7 +28,7 @@ pub fn start_visual(board_array: &[Vec<i32>], size: i32, time: String, heuristic
         Ok(window) => window,
         Err(_e) => {
             println!("There was an error while creating the window");
-            panic!("There was an error while creating the window");
+            panic!();
         }
     };
 
@@ -46,8 +45,9 @@ pub fn start_visual(board_array: &[Vec<i32>], size: i32, time: String, heuristic
         heuristic: heuristic,
     };
 
-    let mut events = Events::new(EventSettings::new());
+    let mut events = Events::new(EventSettings::new().lazy(true));
     while let Some(e) = events.next(&mut window) {
+
         if let Some(args) = e.render_args() {
             visu.render(&args);
         }
