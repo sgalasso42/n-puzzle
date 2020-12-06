@@ -49,11 +49,11 @@ fn main() {
 	println!("Solution: {:?}", sequence);
 	println!("Noves number: {:?}", path.len() - 1);
 	println!("Explored nodes: {}", explored_nodes);
-	let max_states: u64 = factorial((size * size) as u64) / 2;
+	let max_states: u128 = factorial((size * size) as u128) / 2;
 	if max_states > 0 {
 		println!("Possible nb of solvable states: {:?}", max_states);
 	} else {
-		println!("Possible nb of solvable states is beyond imagination...");
+		println!("Possible nb of solvable states is beyond imagination... (> 2^128)");
 	}
 	println!("Duration: {:?}s ({:?})", start_time.elapsed().as_secs(), start_time.elapsed());
 	

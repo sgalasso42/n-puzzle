@@ -1,7 +1,7 @@
 use crate::algo::graph::{apply_action, new_position, Dir};
 
 // Factorial product
-pub fn factorial(num: u64) -> u64 {
+pub fn factorial(num: u128) -> u128 {
 	match num {
 		0 | 1 => 1,
 		_ => match factorial(num - 1).checked_mul(num) {
