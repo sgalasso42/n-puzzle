@@ -18,6 +18,8 @@ pub struct Visu {
     pub index: i32,
     pub total_moves: i32,
     pub heuristic: String,
+    pub explored_nodes: u32,
+    pub max_path_len: u16
 }
 
 impl Visu {
@@ -40,6 +42,8 @@ impl Visu {
         let time = self.time.clone();
         let heuristic = self.heuristic.clone();
         let total_moves = self.total_moves;
+        let explored_nodes = self.explored_nodes;
+        let max_path_len = self.max_path_len;
         let index = self.index;
         let assets = find_folder::Search::ParentsThenKids(3, 3)
             .for_folder("assets")
@@ -148,6 +152,11 @@ impl Visu {
                 &mut glyph_cache,
                 &c,
             );
+            let explored_nodes_str = format!(
+                "{} : {}",
+                "Complexity in time",
+                explored_nodes.to_string(),
+            );
             r = [
                 0.0,
                 win_w + margin_top + 3.0 * 35.0,
@@ -155,7 +164,7 @@ impl Visu {
                 win_w + margin_top + 4.0 * 35.0,
             ];
             gl.draw_text(
-                "Total number of states :",
+                &explored_nodes_str,
                 r,
                 LIGHT_GREY,
                 32,
@@ -164,6 +173,11 @@ impl Visu {
                 &mut glyph_cache,
                 &c,
             );
+            let max_path_len_str = format!(
+                "{} : {}",
+                "Complexity in size",
+                max_path_len.to_string(),
+            );
             r = [
                 0.0,
                 win_w + margin_top + 4.0 * 35.0,
@@ -171,7 +185,7 @@ impl Visu {
                 win_w + margin_top + 5.0 * 35.0,
             ];
             gl.draw_text(
-                "Maximum number of states :",
+                &max_path_len_str,
                 r,
                 LIGHT_GREY,
                 32,

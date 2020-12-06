@@ -63,6 +63,6 @@ fn main() {
 
 	if config.visual == true {
 		let board_array = get_all_states(state.clone(), size, &sequence);
-		start_visual(board_array, size, start_time.elapsed().as_secs().to_string(), config.heuristic.to_string());
+		start_visual(board_array, size, start_time.elapsed().as_secs().to_string(), config.heuristic.to_string(), explored_nodes, max_path_len);
 	}
 }
