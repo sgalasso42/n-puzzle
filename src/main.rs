@@ -5,23 +5,9 @@ use npuzzle::board::create::{snail_generate};
 use npuzzle::board::check::{is_solvable};
 use npuzzle::args::handle::{handle_args};
 use npuzzle::args::parser::{Config};
-use npuzzle::algo::graph::*;
-use npuzzle::board::utils::*;
+use npuzzle::algo::graph::{resolve_puzzle, Dir};
+use npuzzle::board::utils::{get_all_states};
 use npuzzle::visual::render::{start_visual};
-
-pub fn get_full_array(state: Vec<i8>, size: i8, sequence: &Vec<Dir>) -> Vec<Vec<i8>> {
-	let mut state_updated: Vec<i8> = state.clone();
-	let mut board_array: Vec<Vec<i8>> = Vec::new();
-	board_array.push(state.clone());
-	for pos in sequence.iter() {
-		let sd_pos: i8 = slot_pos(size, &state_updated);
-		let dd_pos: (i8, i8) = fstod(sd_pos, size);
-		let new_state: Vec<i8> = apply_action(size, &state_updated, dd_pos, new_position(dd_pos, pos.value())).unwrap();
-		board_array.push(new_state.clone());
-		state_updated = new_state.clone();
-	}
-	return board_array;
-}
 
 fn main() {
 	let config = Config::new();
@@ -60,16 +46,16 @@ fn main() {
 		if node.0 != Dir::None { sequence.push(node.0.clone()) }
 	}
 
-	println!("solution: {:?}", sequence);
-	println!("moves number: {:?}", path.len() - 1);
-	println!("explored nodes: {}", explored_nodes);
+	println!("Dolution: {:?}", sequence);
+	println!("Noves number: {:?}", path.len() - 1);
+	println!("Explored nodes: {}", explored_nodes);
 	// println!("possible nb of solvable states: {:?}", factorial((size * size) as u64) / 2);
-	println!("duration: {:?}s ({:?})", start_time.elapsed().as_secs(), start_time.elapsed());
+	println!("Duration: {:?}s ({:?})", start_time.elapsed().as_secs(), start_time.elapsed());
 	
 	eprintln!("-------");
 
 	if config.visual == true {
-		let board_array = get_full_array(state.clone(), size, &sequence);
+		let board_array = get_all_states(state.clone(), size, &sequence);
 		start_visual(board_array, size, start_time.elapsed().as_secs().to_string(), config.heuristic);
 	}
 }
