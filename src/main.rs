@@ -23,7 +23,7 @@ fn main() {
 	println!("Solvable: {:?}", solvable);
 
 	if !solvable {
-		panic!("error: the puzzle is not solvable")
+		panic!("Error: The puzzle is not solvable")
 	}
 
 	let target = snail_generate(size);
