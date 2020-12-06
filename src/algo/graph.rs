@@ -39,9 +39,9 @@ fn get_neighbors(size: i8, state: &Vec<i8>) -> Vec<(Dir, Vec<i8>)> {
 	let positions = [Dir::N, Dir::E, Dir::S, Dir::W];
 	let mut neighbors: Vec<(Dir, Vec<i8>)> = Vec::new();
 	for pos in positions.iter() {
-		let new_state = apply_action(size, &state, dd_pos, new_position(dd_pos, pos.value()));
-		if new_state.is_ok() {
-			neighbors.push((pos.clone(), new_state.unwrap()));
+		match apply_action(size, &state, dd_pos, new_position(dd_pos, pos.value())) {
+			Ok(new_state) => neighbors.push((pos.clone(), new_state));
+			Err => {}
 		}
 	}
 	return neighbors;
@@ -49,7 +49,7 @@ fn get_neighbors(size: i8, state: &Vec<i8>) -> Vec<(Dir, Vec<i8>)> {
 
 fn graph_search(size: i8, path: &mut Vec<(Dir, Vec<i8>)>, target: &Vec<i8>, cost: u32, bound: u32, explored_nodes: &mut u32) -> (bool, u32) {
 	*explored_nodes += 1;
-	let node = path.last().unwrap();
+	let node = path.last().expect("Error: The path is empty");
 	let new_cost: u32 = cost + linear_conflict(size, &node.1, target);
 	if new_cost > bound {
 		return (false, new_cost);
@@ -73,7 +73,7 @@ fn graph_search(size: i8, path: &mut Vec<(Dir, Vec<i8>)>, target: &Vec<i8>, cost
 }
 
 pub fn resolve_puzzle(size: i8, path: &mut Vec<(Dir, Vec<i8>)>, target: &Vec<i8>, explored_nodes: &mut u32) {
-	let node = path.last().unwrap();
+	let node = path.last().expect("Error: The path has not been initialized");
 	let mut bound = linear_conflict(size, &node.1, target);
 	eprintln!("bound: {}", bound);
 	loop {
