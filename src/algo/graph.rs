@@ -1,5 +1,5 @@
 use crate::board::utils::*;
-use crate::algo::heuristics::*;
+use crate::algo::heuristics::{Heuristic, heuristic};
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Dir {
@@ -50,7 +50,7 @@ fn get_neighbors(size: i8, state: &Vec<i8>) -> Vec<(Dir, Vec<i8>)> {
 fn graph_search(size: i8, path: &mut Vec<(Dir, Vec<i8>)>, target: &Vec<i8>, cost: u32, bound: u32, explored_nodes: &mut u32) -> (bool, u32) {
 	*explored_nodes += 1;
 	let node = path.last().expect("Error: The path is empty");
-	let new_cost: u32 = cost + linear_conflict(size, &node.1, target);
+	let new_cost: u32 = cost + heuristic(Heuristic::Manhattan, size, &node.1, target);
 	if new_cost > bound {
 		return (false, new_cost);
 	}
@@ -74,7 +74,7 @@ fn graph_search(size: i8, path: &mut Vec<(Dir, Vec<i8>)>, target: &Vec<i8>, cost
 
 pub fn resolve_puzzle(size: i8, path: &mut Vec<(Dir, Vec<i8>)>, target: &Vec<i8>, explored_nodes: &mut u32) {
 	let node = path.last().expect("Error: The path has not been initialized");
-	let mut bound = linear_conflict(size, &node.1, target);
+	let mut bound = heuristic(Heuristic::Manhattan, size, &node.1, target);
 	eprintln!("bound: {}", bound);
 	loop {
 		match graph_search(size, path, target, 0, bound, explored_nodes) {

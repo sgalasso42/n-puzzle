@@ -1,12 +1,13 @@
 use clap::{App, Arg};
 use std::ffi::OsString;
+use crate::algo::heuristics::{Heuristic};
 
 #[derive(Debug, PartialEq)]
 pub struct Config {
     pub file: String,
     pub size: i8,
     pub iterations: i32,
-    pub heuristic: String,
+    pub heuristic: Heuristic,
     pub search_type: String,
     pub solvable: bool,
     pub visual: bool,
@@ -107,12 +108,12 @@ impl Config {
             iterations = 100;
         }
 
-        let heuristic: String = match matches.value_of("heuristic").unwrap_or("manhattan") {
-            "manhattan" => "manhattan".to_string(),
-            "euclidian" => "euclidian".to_string(),
-            "hamming" => "hamming".to_string(),
-            "conflict" => "conflict".to_string(),
-            _ => "manhattan".to_string(),
+        let heuristic: Heuristic = match matches.value_of("heuristic").unwrap_or("manhattan") {
+            "manhattan" => Heuristic::Manhattan,
+            "euclidian" => Heuristic::Euclidian,
+            "hamming" => Heuristic::Hamming,
+            "conflict" => Heuristic::Conflict,
+            _ => Heuristic::Manhattan,
         };
 
         let search_type: String = match matches.value_of("type").unwrap_or("normal") {

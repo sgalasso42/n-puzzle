@@ -16,7 +16,7 @@ fn main() {
 	println!("First state: {:?}", state);
 	println!("Size: {}", size);
 	println!("Iterations: {}", config.iterations);
-	println!("Heuristic: {}", config.heuristic);
+	println!("Heuristic: {:?}", config.heuristic);
 	println!("Search type: {}", config.search_type);
 
 	let solvable: bool = is_solvable(size, state.clone());
@@ -56,7 +56,7 @@ fn main() {
 
 	if config.visual == true {
 		let board_array = get_all_states(state.clone(), size, &sequence);
-		start_visual(board_array, size, start_time.elapsed().as_secs().to_string(), config.heuristic);
+		start_visual(board_array, size, start_time.elapsed().as_secs().to_string(), config.heuristic.to_string());
 	}
 }
 
