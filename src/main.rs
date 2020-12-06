@@ -7,6 +7,7 @@ use npuzzle::args::handle::{handle_args};
 use npuzzle::args::parser::{Config};
 use npuzzle::algo::graph::*;
 use npuzzle::board::utils::*;
+use npuzzle::visual::render::{start_visual};
 
 pub fn get_full_array(state: Vec<i8>, size: i8, sequence: &Vec<Dir>) -> Vec<Vec<i8>> {
 	let mut state_updated: Vec<i8> = state.clone();
@@ -70,10 +71,10 @@ fn main() {
 	
 	eprintln!("-------");
 
-	// if config.visual == true {
-	// 	let board_array = get_full_array(state.clone(), size, &sequence);
-	// 	start_visual(&board_array, size, start_time.elapsed().as_secs().to_string(), config.heuristic);
-	// }
+	if config.visual == true {
+		let board_array = get_full_array(state.clone(), size, &sequence);
+		start_visual(board_array, size, start_time.elapsed().as_secs().to_string(), config.heuristic);
+	}
 }
 
 // [!] Attention au parsing :
