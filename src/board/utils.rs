@@ -3,8 +3,11 @@ use crate::algo::graph::{apply_action, new_position, Dir};
 // Factorial product
 pub fn factorial(num: u64) -> u64 {
 	match num {
-			0 | 1 => 1,
-			_ => factorial(num - 1) * num,
+		0 | 1 => 1,
+		_ => match factorial(num - 1).checked_mul(num) {
+            Some(x) => x,
+            None => return 0,
+        },
 	}
 }
 

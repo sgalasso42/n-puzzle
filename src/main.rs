@@ -6,7 +6,7 @@ use npuzzle::board::check::{is_solvable};
 use npuzzle::args::handle::{handle_args};
 use npuzzle::args::parser::{Config};
 use npuzzle::algo::graph::{resolve_puzzle, Dir};
-use npuzzle::board::utils::{get_all_states};
+use npuzzle::board::utils::{get_all_states, factorial};
 use npuzzle::visual::render::{start_visual};
 
 fn main() {
@@ -49,7 +49,12 @@ fn main() {
 	println!("Solution: {:?}", sequence);
 	println!("Noves number: {:?}", path.len() - 1);
 	println!("Explored nodes: {}", explored_nodes);
-	// println!("possible nb of solvable states: {:?}", factorial((size * size) as u64) / 2);
+	let max_states: u64 = factorial((size * size) as u64) / 2;
+	if max_states > 0 {
+		println!("Possible nb of solvable states: {:?}", max_states);
+	} else {
+		println!("Possible nb of solvable states is beyond imagination...");
+	}
 	println!("Duration: {:?}s ({:?})", start_time.elapsed().as_secs(), start_time.elapsed());
 	
 	eprintln!("-------");
