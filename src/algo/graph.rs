@@ -22,7 +22,7 @@ pub fn get_full_array(state: Vec<i32>, size: i32, sequence: &Vec<Dir>) -> Vec<Ve
 	let mut state_updated: Vec<i32> = state.clone();
 	let mut board_array: Vec<Vec<i32>> = Vec::new();
 	board_array.push(state.clone());
-	for pos in sequence.iter() {
+	for pos in sequence {
 		let sd_pos: usize = slot_pos(size, &state_updated);
 		let dd_pos: (i32, i32) = fstod(sd_pos as i32, size);
 		let new_state = apply_action(size, &state_updated, dd_pos, new_position(dd_pos, movement_value(pos))).unwrap();
@@ -97,11 +97,11 @@ fn graph_search(size: i32, path: &mut Vec<(Dir, Vec<i32>)>, target: &Vec<i32>, c
 }
 
 // BFS / Find threads start position
-fn get_start_pos(size: i32, path: &mut Vec<(Dir, Vec<i32>)>, target: &Vec<i32>, cost: i32, bound: i32, explored_nodes: &mut i32) -> VecDeque<Vec<i32>> {
+fn get_start_pos(size: i32, path: &mut Vec<(Dir, Vec<i32>)>, target: &Vec<i32>, cost: i32, bound: i32) -> VecDeque<Vec<i32>> {
 	let root = path.last().unwrap();
 	let mut closed: VecDeque<Vec<i32>> = VecDeque::new();
 	let mut opened: VecDeque<Vec<i32>> = VecDeque::new();
-	opened.push_front(root.1);
+	opened.push_front(root.1.clone());
 	while !opened.is_empty() {
 		let node: Vec<i32> = opened.pop_back().unwrap();
 		// if node.0 == *target { return (true, 0) } // not necessary to return 0
@@ -117,28 +117,32 @@ fn get_start_pos(size: i32, path: &mut Vec<(Dir, Vec<i32>)>, target: &Vec<i32>, 
 }
 
 // Loop
-pub fn resolve_puzzle(size: i32, main_path: &mut Vec<(Dir, Vec<i32>)>, target: &Vec<i32>, explored_nodes: &mut i32) {
+pub fn resolve_puzzle(size: i32, main_path: Vec<(Dir, Vec<i32>)>, target: Vec<i32>, main_explored_nodes: i32) {
 	let node = main_path.last().unwrap();
-	let mut bound = linear_conflict(size, &node.1, target);
+	let mut bound = linear_conflict(size, &node.1, &target);
 
 	eprintln!("bound: {}", bound);
 	loop {
 		let mut results: Vec<(bool, i32)> = Vec::new();
-		let handles = Vec::new();
-		for neighbour in get_start_pos(size, &mut main_path.clone(), target, 0, bound, explored_nodes) {
-			handles.push(thread::spawn(|| {
-				let mut path: Vec<(Dir, Vec<i32>)> = main_path.clone();
-				path.push((Dir::None, neighbour.clone())); // changer none par valeur réelle
-				results.push(graph_search(size, &mut path, target, 0, bound, explored_nodes));
-			}));
+		let mut handles = Vec::new();
+		for neighbour in get_start_pos(size, &mut main_path, &target, 0, bound) {
+			let handle = thread::spawn(|| {
+				let t_target: Vec<i32> = target.clone();
+				let mut t_path: Vec<(Dir, Vec<i32>)> = main_path.clone();
+				let mut explored_nodes: i32 = main_explored_nodes;
+				t_path.push((Dir::None, neighbour.clone())); // changer none par valeur réelle
+				let res = graph_search(size, &mut t_path, &t_target, 0, bound, &mut explored_nodes);
+				// results.push(res);
+			});
+			handles.push(handle);
 		}
-		for handle in handles.iter() {
+		for handle in handles {
 			handle.join().unwrap();
 		}
 		if results.iter().any(|res| res.0 == true) {
 			break;
 		}
-		bound = results.iter().min_by_key(|res| res.1);
+		bound = results.iter().min_by_key(|res| res.1).unwrap().1;
 		eprintln!("new bound: {}", bound);
 	}
 }

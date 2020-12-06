@@ -37,7 +37,7 @@ fn main() {
 	
 	let start_time = Instant::now();
 	let mut explored_nodes: i32 = 0;
-	resolve_puzzle(size, &mut path, &target, &mut explored_nodes);
+	resolve_puzzle(size, &mut path, target, &mut explored_nodes);
 	// use crate::npuzzle::algo::heuristics::{linear_conflict};
 	// linear_conflict(size, &(path.last().unwrap().1), &target);
 	
