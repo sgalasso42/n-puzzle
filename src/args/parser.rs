@@ -125,6 +125,7 @@ impl Config {
 
         let solvable: bool = matches.is_present("solvable")
             || (!matches.is_present("unsolvable") && !matches.is_present("solvable"));
+
         let visual: bool = matches.is_present("visual") && size < 15;
 
         Ok(Config {
