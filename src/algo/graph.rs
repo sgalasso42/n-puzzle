@@ -1,5 +1,5 @@
 use crate::board::utils::*;
-use crate::algo::heuristics::{Heuristic, heuristic};
+use crate::algo::heuristics::{heuristic};
 use crate::args::parser::{Config};
 
 #[derive(Debug, Clone, PartialEq)]

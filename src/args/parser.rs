@@ -112,7 +112,7 @@ impl Config {
             "manhattan" => Heuristic::Manhattan,
             "euclidian" => Heuristic::Euclidian,
             "hamming" => Heuristic::Hamming,
-            "conflict" => Heuristic::Conflict,
+            "conflict" => Heuristic::LinearConflict,
             _ => Heuristic::Manhattan,
         };
 

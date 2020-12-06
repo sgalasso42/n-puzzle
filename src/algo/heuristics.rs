@@ -5,7 +5,7 @@ pub enum Heuristic {
    Manhattan,
    Euclidian,
    Hamming,
-   Conflict
+   LinearConflict
 }
 
 impl fmt::Display for Heuristic {
@@ -25,7 +25,7 @@ pub fn heuristic(heuristic: &Heuristic, size: i8, state: &Vec<i8>, target: &Vec<
 	  Heuristic::Hamming => {
 		return hamming_distance(size, state, target);
 	  }
-	  Heuristic::Conflict => {
+	  Heuristic::LinearConflict => {
 		return linear_conflict(size, state, target);
 	  }
    }
