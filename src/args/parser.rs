@@ -109,12 +109,12 @@ impl Config {
             iterations = 100;
         }
 
-        let heuristic: Heuristic = match matches.value_of("heuristic").unwrap_or("manhattan") {
+        let heuristic: Heuristic = match matches.value_of("heuristic").unwrap_or("conflict") {
             "manhattan" => Heuristic::Manhattan,
             "euclidian" => Heuristic::Euclidian,
             "hamming" => Heuristic::Hamming,
             "conflict" => Heuristic::LinearConflict,
-            _ => Heuristic::Manhattan,
+            _ => Heuristic::LinearConflict,
         };
 
         let search_type: SearchType = match matches.value_of("type").unwrap_or("normal") {
