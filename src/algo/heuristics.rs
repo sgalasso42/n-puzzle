@@ -5,12 +5,9 @@ pub fn manhattan(size: i8, state: &Vec<i8>, target: &Vec<i8>) -> u32 {
             let destination_index: usize = target.iter().position(|&x| x == state[i]).unwrap_or(0);
             let x = (i as i32 % size as i32 - destination_index as i32 % size as i32).abs();
             let y = (i as i32 / size as i32 - destination_index as i32 / size as i32).abs();
-            // eprintln!("x: {:?}", x);
-	        // eprintln!("y: {:?}", y);
             dist += (x + y) as u32;
         }
     }
-	// eprintln!("dist: {:?}", dist);
     return dist;
 }
 
@@ -21,15 +18,9 @@ pub fn euclidian(size: i8, state: &Vec<i8>, target: &Vec<i8>) -> u32 {
             let destination_index: usize = target.iter().position(|&x| x == state[i]).unwrap_or(0);
             let x = (i as i32 % size as i32 - destination_index as i32 % size as i32).pow(2);
             let y = (i as i32 / size as i32 - destination_index as i32 / size as i32).pow(2);
-            // let x: f32 = (i as f32 % size as f32 - destination_index as f32 % size as f32).powf(2.0);
-            // let y: f32 = (i as f32 / size as f32 - destination_index as f32 / size as f32).powf(2.0);
-	        // eprintln!("x: {:?}", x);
-	        // eprintln!("y: {:?}", y);
-            
             dist += (x as f32 + y as f32).sqrt();
         }
     }
-	// eprintln!("dist: {:?}", dist);
     return dist as u32;
 }
 
@@ -53,11 +44,8 @@ fn find_conflicting_tiles_nb_for(size: i8, tile: usize, target: usize, line: &Ve
     let mut conflicts_nb: i8 = 0;
     if line[tile as usize] != size * size {
         for index in 0..size as usize {
-            // eprintln!("line[index]: {}", line[index as usize]);
-            // eprintln!("is_conflicting: {} && {}", line[index as usize] != size * size, is_conflicting(tile, target, index, line));
             let target_b = target_line.iter().position(|&x| x == line[index as usize]);
             if target_b.is_some() {
-                // eprintln!("tl: {} | tg: {} | id: {} | conflict: {}", tile, target, index, is_conflicting);
                 if line[index] != size * size && is_conflicting(tile as i8, target as i8, index as i8, target_b.unwrap() as i8) {
                     conflicts_nb += 1;
                 }
@@ -79,9 +67,7 @@ fn line_extra_moves(size: i8, line: &Vec<i8>, target_line: Vec<i8>) -> i8 {
         }
     }
     while conflicts_table.iter().sum::<i8>() > 0 {
-        // eprintln!("tbl: {:?}", conflicts_table);
         let most_conflicting_tile: usize = conflicts_table.iter().position(|&x| x == *conflicts_table.iter().max().unwrap_or(&0)).unwrap_or(0);
-        // eprintln!("mct: {}", most_conflicting_tile);
         conflicts_table[most_conflicting_tile] = 0;
         for tile in 0..size as usize {
             let target = target_line.iter().position(|&x| x == line[tile]);
@@ -94,32 +80,20 @@ fn line_extra_moves(size: i8, line: &Vec<i8>, target_line: Vec<i8>) -> i8 {
         }
         total_conflicting_tiles += 1;
     }
-    // eprintln!("line total: {}", total_conflicting_tiles);
     return total_conflicting_tiles;
 }
 
-// https://cse.sc.edu/~mgv/csce580sp15/gradPres/HanssonMayerYung1992.pdf (page 8)
 pub fn linear_conflict(size: i8, state: &Vec<i8>, target: &Vec<i8>) -> u32 {
     let mut extra_moves: i8 = 0;
-    // eprintln!("# ROWS ##################");
     for row_index in 0..size {
-        // eprintln!("------------------");
         let row: Vec<i8> = Vec::from(&state[((size * row_index) as usize)..((size * row_index + size) as usize)]);
-        // eprintln!("row : {:?}", row);
         let target_row: Vec<i8> = Vec::from(&target[((size * row_index) as usize)..((size * row_index + size) as usize)]);
-        // eprintln!("trow: {:?}", target_row);
         extra_moves += line_extra_moves(size, &row, target_row);
     }
-    // eprintln!("# COLS ##################");
     for col_index in 0..size {
-        // eprintln!("------------------");
         let col: Vec<i8> = state.iter().cloned().enumerate().filter(|&(i, _)| i % size as usize == col_index as usize).map(|(_, e)| e).collect();
-        // eprintln!("col : {:?}", col);
         let target_col: Vec<i8> = target.iter().cloned().enumerate().filter(|&(i, _)| i % size as usize == col_index as usize).map(|(_, e)| e).collect();
-        // eprintln!("tcol: {:?}", target_col);
         extra_moves += line_extra_moves(size, &col, target_col);
     }
-    // eprintln!("manhattan       : {}", manhattan(size, state, target));
-    // eprintln!("linear conflicts: {}", manhattan(size, state, target) + (2 * extra_moves));
     return manhattan(size, state, target) + (2 * extra_moves) as u32;
 }
