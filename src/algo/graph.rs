@@ -40,8 +40,8 @@ fn get_neighbors(size: i8, state: &Vec<i8>) -> Vec<(Dir, Vec<i8>)> {
 	let mut neighbors: Vec<(Dir, Vec<i8>)> = Vec::new();
 	for pos in positions.iter() {
 		match apply_action(size, &state, dd_pos, new_position(dd_pos, pos.value())) {
-			Ok(new_state) => neighbors.push((pos.clone(), new_state));
-			Err => {}
+			Ok(new_state) => neighbors.push((pos.clone(), new_state)),
+			Err(()) => {}
 		}
 	}
 	return neighbors;
