@@ -29,7 +29,7 @@ fn main() {
 	let target = snail_generate(size);
 	println!("Target: {:?}", target);
 
-	let mut path: Vec<(Dir, Vec<i8>)> = Vec::new();
+	let mut path: Vec<(Dir, Vec<u16>)> = Vec::new();
 	path.push((Dir::None, state.clone()));
 
 	println!("-------");

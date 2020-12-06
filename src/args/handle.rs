@@ -4,11 +4,11 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::io::BufReader;
 
-fn load_file(file: &String) -> (i8, Vec<i8>) {
+fn load_file(file: &String) -> (u16, Vec<u16>) {
     let file = File::open(file).expect("Error: File not found");
     let lines: Vec<_> = BufReader::new(file).lines().collect();
-    let mut size: i8 = 0;
-    let mut values: Vec<i8> = Vec::new();
+    let mut size: u16 = 0;
+    let mut values: Vec<u16> = Vec::new();
 
     for line in lines.into_iter() {
         let offset = line.as_ref().expect("Error: Bad file format")[..].find('#').unwrap_or(line.as_ref().unwrap().len());
@@ -23,14 +23,14 @@ fn load_file(file: &String) -> (i8, Vec<i8>) {
                     Ok(value) => match size == 0  {
                         true => {
                             if split.len() == 1 && value > 0 && value < 255 {
-                                size = value as i8;
+                                size = value as u16;
                             } else {
                                 panic!("Error: Bad value '{}', please indicate a valid map size", value);
                             }
                         },
                         false => {
-                            if value >= 0 && (value as i8) < size * size && !values.contains(&(value as i8)) {
-                                values.push(value as i8)
+                            if value >= 0 && (value as u16) < size * size && !values.contains(&(value as u16)) {
+                                values.push(value as u16)
                             } else {
                                 panic!("Error: Bad value '{}', values are not usable", value);
                             }
@@ -46,9 +46,9 @@ fn load_file(file: &String) -> (i8, Vec<i8>) {
     return (size, values);
 }
 
-pub fn handle_args(config: &Config) -> (i8, Vec<i8>) {
+pub fn handle_args(config: &Config) -> (u16, Vec<u16>) {
     if config.file.is_empty() {
-        return board_generate(config.size as i8, config.iterations, config.solvable);
+        return board_generate(config.size, config.iterations, config.solvable);
     }
     return load_file(&config.file);
 }

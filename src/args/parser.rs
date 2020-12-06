@@ -6,7 +6,7 @@ use crate::algo::search::{SearchType};
 #[derive(Debug, PartialEq)]
 pub struct Config {
     pub file: String,
-    pub size: i8,
+    pub size: u16,
     pub iterations: i32,
     pub heuristic: Heuristic,
     pub search_type: SearchType,
@@ -129,7 +129,7 @@ impl Config {
 
         Ok(Config {
             file: file,
-            size: size as i8,
+            size: size as u16,
             iterations: iterations,
             heuristic: heuristic,
             search_type: search_type,
