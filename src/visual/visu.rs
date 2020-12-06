@@ -10,8 +10,8 @@ use piston_window::*;
 
 pub struct Visu {
     pub gl: GlGraphics,
-    pub board: Vec<i32>,
-    pub size: i32,
+    pub board: Vec<i8>,
+    pub size: i8,
     pub time: String,
     pub margin_top: f64,
     pub margin_x: f64,
@@ -216,7 +216,7 @@ impl Visu {
         });
     }
 
-    pub fn update_board(&mut self, _args: &Button, board: Vec<i32>, index: usize) {
+    pub fn update_board(&mut self, _args: &Button, board: Vec<i8>, index: usize) {
         self.board = board;
         self.index = index as i32;
     }

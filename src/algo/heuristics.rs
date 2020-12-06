@@ -1,4 +1,37 @@
-pub fn manhattan(size: i8, state: &Vec<i8>, target: &Vec<i8>) -> u32 {
+use std::fmt;
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum Heuristic {
+   Manhattan,
+   Euclidian,
+   Hamming,
+   LinearConflict
+}
+
+impl fmt::Display for Heuristic {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+
+pub fn heuristic(heuristic: &Heuristic, size: i8, state: &Vec<i8>, target: &Vec<i8>) -> u32 {
+   match heuristic {
+	  Heuristic::Manhattan => {
+		return manhattan(size, state, target);
+	  },
+	  Heuristic::Euclidian => {
+		return euclidian(size, state, target);
+	  },
+	  Heuristic::Hamming => {
+		return hamming_distance(size, state, target);
+	  }
+	  Heuristic::LinearConflict => {
+		return linear_conflict(size, state, target);
+	  }
+   }
+}
+
+fn manhattan(size: i8, state: &Vec<i8>, target: &Vec<i8>) -> u32 {
     let mut dist: u32 = 0;
     for i in 0..(state.len()){
         if state[i] != size * size {
@@ -11,7 +44,7 @@ pub fn manhattan(size: i8, state: &Vec<i8>, target: &Vec<i8>) -> u32 {
     return dist;
 }
 
-pub fn euclidian(size: i8, state: &Vec<i8>, target: &Vec<i8>) -> u32 {
+fn euclidian(size: i8, state: &Vec<i8>, target: &Vec<i8>) -> u32 {
     let mut dist: f32 = 0.0;
     for i in 0..(state.len()) {
         if state[i] != size * size {
@@ -24,8 +57,8 @@ pub fn euclidian(size: i8, state: &Vec<i8>, target: &Vec<i8>) -> u32 {
     return dist as u32;
 }
 
-pub fn hamming_distance(size: i32, state: &Vec<i32>, target: &Vec<i32>) -> i32 {
-    let mut misplaced: i32 = 0;
+fn hamming_distance(size: i8, state: &Vec<i8>, target: &Vec<i8>) -> u32 {
+    let mut misplaced: u32 = 0;
     for i in 0..(size * size) {
         if state[i as usize] != size * size {
            if state[i as usize] != target[i as usize] {
@@ -83,7 +116,7 @@ fn line_extra_moves(size: i8, line: &Vec<i8>, target_line: Vec<i8>) -> i8 {
     return total_conflicting_tiles;
 }
 
-pub fn linear_conflict(size: i8, state: &Vec<i8>, target: &Vec<i8>) -> u32 {
+fn linear_conflict(size: i8, state: &Vec<i8>, target: &Vec<i8>) -> u32 {
     let mut extra_moves: i8 = 0;
     for row_index in 0..size {
         let row: Vec<i8> = Vec::from(&state[((size * row_index) as usize)..((size * row_index + size) as usize)]);
