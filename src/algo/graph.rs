@@ -9,7 +9,7 @@ pub enum Dir {
 }
 
 impl Dir {
-	pub fn value(&self) -> (i8, i8) {
+	pub fn value(&self) -> (i16, i16) {
 		match *self {
 			Dir::N => (0, -1),
 			Dir::E => (1, 0),
@@ -20,26 +20,26 @@ impl Dir {
 	}
 }
 
-pub fn new_position(position: (i8, i8), dir: (i8, i8)) -> (i8, i8) {
-	return (position.0 + dir.0, position.1 + dir.1);
+pub fn new_position(position: (u16, u16), dir: (i16, i16)) -> (u16, u16) {
+	return ((position.0 as i16 + dir.0) as u16, (position.1 as i16 + dir.1) as u16);
 }
 
-pub fn apply_action(size: i8, state: &Vec<i8>, current_pos: (i8, i8), new_pos: (i8, i8)) -> Result<Vec<i8>, ()> {
-	let mut new_state: Vec<i8> = state.clone();
+pub fn apply_action(size: u16, state: &Vec<u16>, current_pos: (u16, u16), new_pos: (u16, u16)) -> Result<Vec<u16>, ()> {
+	let mut new_state: Vec<u16> = state.clone();
 	if (0..(size)).contains(&(new_pos.0)) && (0..(size)).contains(&(new_pos.1)) {
-		let index_a: i8 = fdtos(current_pos.0, current_pos.1, size);
-		let index_b: i8 = fdtos(new_pos.0, new_pos.1, size);
+		let index_a: u16 = fdtos(current_pos.0, current_pos.1, size);
+		let index_b: u16 = fdtos(new_pos.0, new_pos.1, size);
 		new_state.swap(index_a as usize, index_b as usize);
 		return Ok(new_state);
 	}
 	return Err(());
 }
 
-fn get_neighbors(size: i8, state: &Vec<i8>) -> Vec<(Dir, Vec<i8>)> {
-	let sd_pos: i8 = slot_pos(size, &state);
-	let dd_pos: (i8, i8) = fstod(sd_pos, size);
+fn get_neighbors(size: u16, state: &Vec<u16>) -> Vec<(Dir, Vec<u16>)> {
+	let sd_pos: u16 = slot_pos(size, &state);
+	let dd_pos: (u16, u16) = fstod(sd_pos, size);
 	let positions = [Dir::N, Dir::E, Dir::S, Dir::W];
-	let mut neighbors: Vec<(Dir, Vec<i8>)> = Vec::new();
+	let mut neighbors: Vec<(Dir, Vec<u16>)> = Vec::new();
 	for pos in positions.iter() {
 		match apply_action(size, &state, dd_pos, new_position(dd_pos, pos.value())) {
 			Ok(new_state) => neighbors.push((pos.clone(), new_state)),
@@ -49,7 +49,7 @@ fn get_neighbors(size: i8, state: &Vec<i8>) -> Vec<(Dir, Vec<i8>)> {
 	return neighbors;
 }
 
-fn graph_search(size: i8, path: &mut Vec<(Dir, Vec<i8>)>, target: &Vec<i8>, cost: u32, bound: u32, explored_nodes: &mut u32, config: &Config) -> (bool, u32) {
+fn graph_search(size: u16, path: &mut Vec<(Dir, Vec<u16>)>, target: &Vec<u16>, cost: u32, bound: u32, explored_nodes: &mut u32, config: &Config) -> (bool, u32) {
 	*explored_nodes += 1;
 	let node = path.last().expect("Error: The path is empty");
 	let new_cost: u32 = match config.search_type {
@@ -84,7 +84,7 @@ fn graph_search(size: i8, path: &mut Vec<(Dir, Vec<i8>)>, target: &Vec<i8>, cost
 	return (false, min);
 }
 
-pub fn resolve_puzzle(size: i8, path: &mut Vec<(Dir, Vec<i8>)>, target: &Vec<i8>, explored_nodes: &mut u32, config: &Config) {
+pub fn resolve_puzzle(size: u16, path: &mut Vec<(Dir, Vec<u16>)>, target: &Vec<u16>, explored_nodes: &mut u32, config: &Config) {
 	let node = path.last().expect("Error: The path has not been initialized");
 	let mut bound = match config.search_type {
 		SearchType::Normal | SearchType::Greedy => {

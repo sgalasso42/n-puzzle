@@ -7,7 +7,7 @@ use opengl_graphics::{GlGraphics, OpenGL};
 use piston_window::*;
 use std::panic;
 
-pub fn start_visual(board_array: Vec<Vec<i8>>, size: i8, time: String, heuristic: String) {
+pub fn start_visual(board_array: Vec<Vec<u16>>, size: u16, time: String, heuristic: String) {
     let mut index: usize = 0;
     let opengl = OpenGL::V3_2;
 
