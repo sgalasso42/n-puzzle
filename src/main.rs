@@ -29,6 +29,7 @@ fn main() {
 	let target = snail_generate(size);
 	println!("Target: {:?}", target);
 
+
 	let mut path: Vec<(Dir, Vec<u16>)> = Vec::new();
 	path.push((Dir::None, state.clone()));
 
@@ -63,14 +64,3 @@ fn main() {
 		start_visual(board_array, size, start_time.elapsed().as_secs().to_string(), config.heuristic.to_string());
 	}
 }
-
-// [!] Attention au parsing :
-// size < std::i8::MAX
-// explored_nodes < std::u32::MAX
-// cell content < std::io::MAX
-
-// TODO :
-// Utilisation des bonnes structures de data (pas que i32 et f64)
-// Multithreading
-// Sécu
-// virer les eprint
