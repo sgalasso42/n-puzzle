@@ -23,7 +23,7 @@ fn main() {
 	println!("Solvable: {:?}", solvable);
 
 	if !solvable {
-		panic!("error: puzzle not solvable")
+		panic!("error: the puzzle is not solvable")
 	}
 
 	let target = snail_generate(size);
@@ -47,7 +47,7 @@ fn main() {
 	}
 
 	println!("Solution: {:?}", sequence);
-	println!("Noves number: {:?}", path.len() - 1);
+	println!("Number of moves: {:?}", path.len() - 1);
 	println!("Explored nodes: {}", explored_nodes);
 	let max_states: u128 = factorial((size * size) as u128) / 2;
 	if max_states > 0 {
@@ -56,8 +56,7 @@ fn main() {
 		println!("Possible nb of solvable states is beyond imagination... (> 2^128)");
 	}
 	println!("Duration: {:?}s ({:?})", start_time.elapsed().as_secs(), start_time.elapsed());
-	
-	eprintln!("-------");
+	println!("-------");
 
 	if config.visual == true {
 		let board_array = get_all_states(state.clone(), size, &sequence);
