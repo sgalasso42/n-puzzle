@@ -46,7 +46,7 @@ fn main() {
 		if node.0 != Dir::None { sequence.push(node.0.clone()) }
 	}
 
-	println!("Dolution: {:?}", sequence);
+	println!("Solution: {:?}", sequence);
 	println!("Noves number: {:?}", path.len() - 1);
 	println!("Explored nodes: {}", explored_nodes);
 	// println!("possible nb of solvable states: {:?}", factorial((size * size) as u64) / 2);

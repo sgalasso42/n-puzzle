@@ -1,6 +1,7 @@
 use crate::board::utils::*;
 use crate::algo::heuristics::{heuristic};
 use crate::args::parser::{Config};
+use crate::algo::search::{SearchType};
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Dir {
@@ -51,7 +52,17 @@ fn get_neighbors(size: i8, state: &Vec<i8>) -> Vec<(Dir, Vec<i8>)> {
 fn graph_search(size: i8, path: &mut Vec<(Dir, Vec<i8>)>, target: &Vec<i8>, cost: u32, bound: u32, explored_nodes: &mut u32, config: &Config) -> (bool, u32) {
 	*explored_nodes += 1;
 	let node = path.last().expect("Error: The path is empty");
-	let new_cost: u32 = cost + heuristic(&config.heuristic, size, &node.1, target);
+	let new_cost: u32 = match config.search_type {
+		SearchType::Normal => {
+			cost + heuristic(&config.heuristic, size, &node.1, target)
+		},
+		SearchType::Greedy => {
+			heuristic(&config.heuristic, size, &node.1, target)
+		},
+		SearchType::Uniform => {
+			cost
+		}
+	};
 	if new_cost > bound {
 		return (false, new_cost);
 	}
@@ -75,7 +86,14 @@ fn graph_search(size: i8, path: &mut Vec<(Dir, Vec<i8>)>, target: &Vec<i8>, cost
 
 pub fn resolve_puzzle(size: i8, path: &mut Vec<(Dir, Vec<i8>)>, target: &Vec<i8>, explored_nodes: &mut u32, config: &Config) {
 	let node = path.last().expect("Error: The path has not been initialized");
-	let mut bound = heuristic(&config.heuristic, size, &node.1, target);
+	let mut bound = match config.search_type {
+		SearchType::Normal | SearchType::Greedy => {
+			heuristic(&config.heuristic, size, &node.1, target)
+		},
+		SearchType::Uniform => {
+			0
+		}
+	};
 	eprintln!("bound: {}", bound);
 	loop {
 		match graph_search(size, path, target, 0, bound, explored_nodes, config) {
