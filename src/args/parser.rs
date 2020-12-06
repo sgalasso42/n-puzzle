@@ -4,7 +4,7 @@ use std::ffi::OsString;
 #[derive(Debug, PartialEq)]
 pub struct Config {
     pub file: String,
-    pub size: i32,
+    pub size: i8,
     pub iterations: i32,
     pub heuristic: String,
     pub solvable: bool,
@@ -112,7 +112,7 @@ impl Config {
 
         Ok(Config {
             file: file,
-            size: size,
+            size: size as i8,
             iterations: iterations,
             heuristic: heuristic,
             solvable: solvable,

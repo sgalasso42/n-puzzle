@@ -1,108 +1,86 @@
 use crate::board::utils::*;
 use crate::algo::heuristics::*;
 
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Dir {
 	N, E, S, W, None
 }
 
-fn movement_value(dir: &Dir) -> (i32, i32) {
-	return match dir {
-		Dir::N => (0, -1),
-		Dir::E => (1, 0),
-		Dir::S => (0, 1),
-		Dir::W => (-1, 0),
-		Dir::None => (0, 0)
+impl Dir {
+	pub fn value(&self) -> (i8, i8) {
+		match *self {
+			Dir::N => (0, -1),
+			Dir::E => (1, 0),
+			Dir::S => (0, 1),
+			Dir::W => (-1, 0),
+			Dir::None => (0, 0)
+		}
 	}
 }
 
-// define new position
-fn new_position(position: (i32, i32), movement_value: (i32, i32)) -> (i32, i32) {
-	// eprintln!("[position]: {:?}", position);
-	// eprintln!("[movement_value]: {:?}", movement_value);
-	return (position.0 as i32 + movement_value.0, position.1 as i32 + movement_value.1);
+pub fn new_position(position: (i8, i8), dir: (i8, i8)) -> (i8, i8) {
+	return (position.0 + dir.0, position.1 + dir.1);
 }
 
-// moving the slot to get the new state
-fn apply_action(size: i32, state: &Vec<i32>, current_pos: (i32, i32), new_pos: (i32, i32)) -> Result<Vec<i32>, ()> {
-	let mut new_state = state.clone();
-	// eprintln!("--------------------");
-	// eprintln!("[state]: {:?}", state);
-	// eprintln!("[current_pos]: {:?}", current_pos);
-	// eprintln!("[new_pos]: {:?}", new_pos);
+pub fn apply_action(size: i8, state: &Vec<i8>, current_pos: (i8, i8), new_pos: (i8, i8)) -> Result<Vec<i8>, ()> {
+	let mut new_state: Vec<i8> = state.clone();
 	if (0..(size)).contains(&(new_pos.0)) && (0..(size)).contains(&(new_pos.1)) {
-		let index_a = fdtos(current_pos.0, current_pos.1, size);
-		let index_b = fdtos(new_pos.0, new_pos.1, size);
+		let index_a: i8 = fdtos(current_pos.0, current_pos.1, size);
+		let index_b: i8 = fdtos(new_pos.0, new_pos.1, size);
 		new_state.swap(index_a as usize, index_b as usize);
 		return Ok(new_state);
 	}
 	return Err(());
 }
 
-// find puzzle next possibilities
-fn get_neighbors(size: i32, state: &Vec<i32>) -> Vec<(Dir, Vec<i32>)> {
-	let sd_pos: usize = slot_pos(size, &state); // single dimension position
-	// eprintln!("--------------------");
-	// eprintln!("[sd_pos]: {:?}", sd_pos);
-	let dd_pos: (i32, i32) = fstod(sd_pos as i32, size); // double dimension position
-	// eprintln!("[dd_pos]: {:?}", dd_pos);
+fn get_neighbors(size: i8, state: &Vec<i8>) -> Vec<(Dir, Vec<i8>)> {
+	let sd_pos: i8 = slot_pos(size, &state);
+	let dd_pos: (i8, i8) = fstod(sd_pos, size);
 	let positions = [Dir::N, Dir::E, Dir::S, Dir::W];
-	let mut neighbors: Vec<(Dir, Vec<i32>)> = Vec::new();
+	let mut neighbors: Vec<(Dir, Vec<i8>)> = Vec::new();
 	for pos in positions.iter() {
-		let new_state = apply_action(size, &state, dd_pos, new_position(dd_pos, movement_value(pos)));
+		let new_state = apply_action(size, &state, dd_pos, new_position(dd_pos, pos.value()));
 		if new_state.is_ok() {
-			neighbors.push((*pos, new_state.unwrap()));
+			neighbors.push((pos.clone(), new_state.unwrap()));
 		}
 	}
 	return neighbors;
 }
 
-// recursive graph search
-fn graph_search(size: i32, path: &mut Vec<(Dir, Vec<i32>)>, target: &Vec<i32>, cost: i32, bound: i32, explored_nodes: &mut i32) -> (bool, i32) {
+fn graph_search(size: i8, path: &mut Vec<(Dir, Vec<i8>)>, target: &Vec<i8>, cost: u32, bound: u32, explored_nodes: &mut u32) -> (bool, u32) {
 	*explored_nodes += 1;
 	let node = path.last().unwrap();
-	let new_cost = cost + linear_conflict(size, &node.1, target);
-	
-	// eprintln!("[search node]: {:?}", node);
-	if new_cost > bound { return (false, new_cost) }
-	else if node.1 == *target { return (true, new_cost) }
-	// eprintln!("[neighbors]: {:?}", neighbors);
-	let mut min: i32 = std::i32::MAX;
+	let new_cost: u32 = cost + linear_conflict(size, &node.1, target);
+	if new_cost > bound {
+		return (false, new_cost);
+	}
+	else if node.1 == *target {
+		return (true, new_cost);
+	}
+	let mut min: u32 = std::u32::MAX;
 	for neighbour in get_neighbors(size, &node.1).iter() {
 		if !path.contains(neighbour) {
 			path.push(neighbour.clone());
-			let res = graph_search(size, path, target, cost + 1, bound, explored_nodes);
-			if res.0 { return (true, min) }
-			else if res.1 < min { min = res.1 }
+			match graph_search(size, path, target, cost + 1, bound, explored_nodes) {
+				(res, _) if res => return (true, min),
+				(_, val) if val < min => min = val,
+				(_, _) => {}
+			}
 			path.pop();
 		}
 	}
 	return (false, min);
 }
 
-// loop
-pub fn resolve_puzzle(size: i32, path: &mut Vec<(Dir, Vec<i32>)>, target: &Vec<i32>, explored_nodes: &mut i32) {
+pub fn resolve_puzzle(size: i8, path: &mut Vec<(Dir, Vec<i8>)>, target: &Vec<i8>, explored_nodes: &mut u32) {
 	let node = path.last().unwrap();
 	let mut bound = linear_conflict(size, &node.1, target);
 	eprintln!("bound: {}", bound);
 	loop {
-		let res = graph_search(size, path, target, 0, bound, explored_nodes);
-		if res.0 { break; }
-		bound = res.1;
+		match graph_search(size, path, target, 0, bound, explored_nodes) {
+			res if res.0 => break,
+			res => bound = res.1
+		}
 		eprintln!("new bound: {}", bound);
 	}
-}
-
-pub fn get_full_array(state: Vec<i32>, size: i32, sequence: &Vec<Dir>) -> Vec<Vec<i32>> {
-	let mut state_updated: Vec<i32> = state.clone();
-	let mut board_array: Vec<Vec<i32>> = Vec::new();
-	board_array.push(state.clone());
-	for pos in sequence.iter() {
-		let sd_pos: usize = slot_pos(size, &state_updated);
-		let dd_pos: (i32, i32) = fstod(sd_pos as i32, size);
-		let new_state = apply_action(size, &state_updated, dd_pos, new_position(dd_pos, movement_value(pos))).unwrap();
-		board_array.push(new_state.clone());
-		state_updated = new_state.clone();
-	}
-	return board_array;
 }

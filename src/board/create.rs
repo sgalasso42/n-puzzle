@@ -1,7 +1,7 @@
 use rand::seq::SliceRandom;
 
 // give snail value for a given index
-fn snail(w: i32, h: i32, x: i32, y: i32) -> i32 {
+fn snail(w: i8, h: i8, x: i8, y: i8) -> i8 {
 	return if y != 0 {
 		w + snail(h - 1, w, y - 1, w - x - 1)
 	} else {
@@ -10,8 +10,8 @@ fn snail(w: i32, h: i32, x: i32, y: i32) -> i32 {
 }
 
 // generate a snake organized array of a given size
-pub fn snail_generate(size: i32) -> Vec<i32> {
-	let mut target: Vec<i32> = Vec::new();
+pub fn snail_generate(size: i8) -> Vec<i8> {
+	let mut target: Vec<i8> = Vec::new();
 	for y in 0..size {
 		for x in 0..size {
 			target.push(snail(size, size, x, y));
@@ -21,20 +21,20 @@ pub fn snail_generate(size: i32) -> Vec<i32> {
 }
 
 // generate a game board array of a given size
-pub fn board_generate(s: i32, iterations: i32, solvable: bool) -> (i32, Vec<i32>) {
+pub fn board_generate(s: i8, iterations: i8, solvable: bool) -> (i8, Vec<i8>) {
 	/*
 	* Creates a game board
 	* @return the generated game board
 	*/
-	let mut board: Vec<i32> = snail_generate(s);
+	let mut board: Vec<i8> = snail_generate(s as i8);
 	
-	let mut i: i32 = 0;
-	let mut pos: i32;
-	let mut choices: Vec<i32> = Vec::new();
-	let mut switch_index: &i32;
+	let mut i: i8 = 0;
+	let mut pos: i8;
+	let mut choices: Vec<i8> = Vec::new();
+	let mut switch_index: &i8;
 	
 	while i < iterations {
-		pos = board.iter().position(|&x| x == s * s).unwrap_or(0) as i32;
+		pos = board.iter().position(|&x| x == s * s).unwrap_or(0) as i8;
 		choices.clear();
 		
 		if pos % s > 0 {
@@ -59,15 +59,15 @@ pub fn board_generate(s: i32, iterations: i32, solvable: bool) -> (i32, Vec<i32>
 
 	if !solvable {
 		if board[0] == s * s || board[1] == s * s {
-			let tmp: i32 = board[(s * s)  as usize - 1];
+			let tmp: i8 = board[(s * s) as usize - 1];
 			board[(s * s) as usize - 1] = board[(s * s) as usize - 2];
 			board[(s * s) as usize - 2] = tmp;
 		}
 		else {
-			let tmp: i32 = board[0];
+			let tmp: i8 = board[0];
 			board[0] = board[1];
 			board[1] = tmp;
 		}
 	}
-	return (s, board);
+	return (s as i8, board);
 }

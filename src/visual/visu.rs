@@ -67,7 +67,7 @@ impl Visu {
             for y in 0..size as u32 {
                 for x in 0..size as u32 {
                     let pos = grid.cell_position((x, y));
-                    let nb = board[fdtos(x as i32, y as i32, size) as usize];
+                    let nb = board[fdtos(x as i8, y as i8, size as i8) as usize];
 
                     if nb != size * size {
                         let string: String = nb.to_string();
