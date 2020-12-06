@@ -5,32 +5,50 @@ use std::io::prelude::*;
 use std::io::BufReader;
 
 fn load_file(file: &String) -> (i8, Vec<i8>) {
-    let file = File::open(file).expect("error: file not found");
+    let file = File::open(file).expect("Error: File not found");
     let lines: Vec<_> = BufReader::new(file).lines().collect();
     let mut size: i8 = 0;
     let mut values: Vec<i8> = Vec::new();
-    for (i, line) in lines.into_iter().enumerate() {
-        for num in line.expect("error: bad format").split_whitespace() {
-            if i == 0 {
-                size = num.parse().expect("error: bad character")
-            } else {
-                let mut val = num.parse().expect("error: bad character");
-                if val == 0 {
-                    val = size * size
+
+    for line in lines.into_iter() {
+        let offset = line.as_ref().expect("Error: Bad file format")[..].find('#').unwrap_or(line.as_ref().unwrap().len());
+        let drained: String = line.unwrap().drain(..offset).collect();
+        let split: Vec<_> = drained.split_whitespace().map(|s| s.to_string()).collect();
+        if size > 0 && split.len() != size as usize {
+            panic!("Error: Bad map format");
+        }
+        for el in split.iter() {
+            if el != "" {
+                match el.parse::<i32>() {
+                    Ok(value) => match size == 0  {
+                        true => {
+                            if split.len() == 1 && value > 0 && value < 255 {
+                                size = value as i8;
+                            } else {
+                                panic!("Error: Bad value '{}', please indicate a valid map size", value);
+                            }
+                        },
+                        false => {
+                            if value >= 0 && (value as i8) < size * size && !values.contains(&(value as i8)) {
+                                values.push(value as i8)
+                            } else {
+                                panic!("Error: Bad value '{}', values are not usable", value);
+                            }
+                        },
+                    },
+                    Err(_) => panic!("Error: Bad character"),
                 }
-                values.push(val)
             }
         }
     }
-    // if size * size != value.len => error
-    // handle comments #
+    let zero_pos: usize = values.iter().position(|el| *el == 0).expect("Error: There should be a slot pos in map");
+    values[zero_pos] = size * size;
     return (size, values);
 }
 
 pub fn handle_args(config: &Config) -> (i8, Vec<i8>) {
     if config.file.is_empty() {
         return board_generate(config.size as i8, config.iterations, config.solvable);
-    } else {
-        return load_file(&config.file);
     }
+    return load_file(&config.file);
 }
