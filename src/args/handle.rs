@@ -1,10 +1,14 @@
 use crate::args::parser::Config;
 use crate::board::create::board_generate;
 use std::fs::File;
+use std::fs::metadata;
 use std::io::prelude::*;
 use std::io::BufReader;
 
 fn load_file(file: &String) -> (u16, Vec<u16>) {
+    if !metadata(file).expect("Error: A problem occured with the file").is_file() {
+        panic!("Error: The file is a lie");
+    }
     let file = File::open(file).expect("Error: File not found");
     let lines: Vec<_> = BufReader::new(file).lines().collect();
     let mut size: u16 = 0;
