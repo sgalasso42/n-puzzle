@@ -94,12 +94,12 @@ pub fn resolve_puzzle(size: u16, path: &mut Vec<(Dir, Vec<u16>)>, target: &Vec<u
 			0
 		}
 	};
-	eprintln!("bound: {}", bound);
+	println!("bound: {}", bound);
 	loop {
 		match graph_search(size, path, target, 0, bound, explored_nodes, config) {
 			res if res.0 => break,
 			res => bound = res.1
 		}
-		eprintln!("new bound: {}", bound);
+		println!("new bound: {}", bound);
 	}
 }
