@@ -37,8 +37,9 @@ fn main() {
 	
 	let start_time = Instant::now();
 	let mut explored_nodes: u32 = 0;
+	let mut max_path_len: u16 = 0;
 
-	resolve_puzzle(size, &mut path, &target, &mut explored_nodes, &config);
+	resolve_puzzle(size, &mut path, &target, &mut explored_nodes, &mut max_path_len, &config);
 	
 	println!("-------");
 	
@@ -49,7 +50,8 @@ fn main() {
 
 	println!("Solution: {:?}", sequence);
 	println!("Number of moves: {:?}", path.len() - 1);
-	println!("Explored nodes: {}", explored_nodes);
+	println!("Complexity in time: {}", explored_nodes);
+	println!("Complexity in size: {}", max_path_len);
 	let max_states: u128 = factorial((size * size) as u128) / 2;
 	if max_states > 0 {
 		println!("Possible nb of solvable states: {:?}", max_states);
