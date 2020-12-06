@@ -1,5 +1,6 @@
 use crate::board::utils::*;
 use crate::algo::heuristics::{Heuristic, heuristic};
+use crate::args::parser::{Config};
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Dir {
@@ -47,10 +48,10 @@ fn get_neighbors(size: i8, state: &Vec<i8>) -> Vec<(Dir, Vec<i8>)> {
 	return neighbors;
 }
 
-fn graph_search(size: i8, path: &mut Vec<(Dir, Vec<i8>)>, target: &Vec<i8>, cost: u32, bound: u32, explored_nodes: &mut u32) -> (bool, u32) {
+fn graph_search(size: i8, path: &mut Vec<(Dir, Vec<i8>)>, target: &Vec<i8>, cost: u32, bound: u32, explored_nodes: &mut u32, config: &Config) -> (bool, u32) {
 	*explored_nodes += 1;
 	let node = path.last().expect("Error: The path is empty");
-	let new_cost: u32 = cost + heuristic(Heuristic::Manhattan, size, &node.1, target);
+	let new_cost: u32 = cost + heuristic(&config.heuristic, size, &node.1, target);
 	if new_cost > bound {
 		return (false, new_cost);
 	}
@@ -61,7 +62,7 @@ fn graph_search(size: i8, path: &mut Vec<(Dir, Vec<i8>)>, target: &Vec<i8>, cost
 	for neighbour in get_neighbors(size, &node.1).iter() {
 		if !path.contains(neighbour) {
 			path.push(neighbour.clone());
-			match graph_search(size, path, target, cost + 1, bound, explored_nodes) {
+			match graph_search(size, path, target, cost + 1, bound, explored_nodes, config) {
 				(res, _) if res => return (true, min),
 				(_, val) if val < min => min = val,
 				(_, _) => {}
@@ -72,12 +73,12 @@ fn graph_search(size: i8, path: &mut Vec<(Dir, Vec<i8>)>, target: &Vec<i8>, cost
 	return (false, min);
 }
 
-pub fn resolve_puzzle(size: i8, path: &mut Vec<(Dir, Vec<i8>)>, target: &Vec<i8>, explored_nodes: &mut u32) {
+pub fn resolve_puzzle(size: i8, path: &mut Vec<(Dir, Vec<i8>)>, target: &Vec<i8>, explored_nodes: &mut u32, config: &Config) {
 	let node = path.last().expect("Error: The path has not been initialized");
-	let mut bound = heuristic(Heuristic::Manhattan, size, &node.1, target);
+	let mut bound = heuristic(&config.heuristic, size, &node.1, target);
 	eprintln!("bound: {}", bound);
 	loop {
-		match graph_search(size, path, target, 0, bound, explored_nodes) {
+		match graph_search(size, path, target, 0, bound, explored_nodes, config) {
 			res if res.0 => break,
 			res => bound = res.1
 		}

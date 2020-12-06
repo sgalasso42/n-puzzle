@@ -37,7 +37,7 @@ fn main() {
 	let start_time = Instant::now();
 	let mut explored_nodes: u32 = 0;
 
-	resolve_puzzle(size, &mut path, &target, &mut explored_nodes);
+	resolve_puzzle(size, &mut path, &target, &mut explored_nodes, &config);
 	
 	println!("-------");
 	

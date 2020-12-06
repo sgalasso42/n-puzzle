@@ -14,7 +14,7 @@ impl fmt::Display for Heuristic {
     }
 }
 
-pub fn heuristic(heuristic: Heuristic, size: i8, state: &Vec<i8>, target: &Vec<i8>) -> u32 {
+pub fn heuristic(heuristic: &Heuristic, size: i8, state: &Vec<i8>, target: &Vec<i8>) -> u32 {
    match heuristic {
 	  Heuristic::Manhattan => {
 		return manhattan(size, state, target);
