@@ -1,6 +1,7 @@
 use clap::{App, Arg};
 use std::ffi::OsString;
 use crate::algo::heuristics::{Heuristic};
+use crate::algo::search::{SearchType};
 
 #[derive(Debug, PartialEq)]
 pub struct Config {
@@ -8,7 +9,7 @@ pub struct Config {
     pub size: i8,
     pub iterations: i32,
     pub heuristic: Heuristic,
-    pub search_type: String,
+    pub search_type: SearchType,
     pub solvable: bool,
     pub visual: bool,
 }
@@ -116,10 +117,10 @@ impl Config {
             _ => Heuristic::Manhattan,
         };
 
-        let search_type: String = match matches.value_of("type").unwrap_or("normal") {
-            "greedy" => "greedy".to_string(),
-            "uniform" => "uniform".to_string(),
-            _ => "normal".to_string(),
+        let search_type: SearchType = match matches.value_of("type").unwrap_or("normal") {
+            "greedy" => SearchType::Greedy,
+            "uniform" => SearchType::Uniform,
+            _ => SearchType::Normal,
         };
 
         let solvable: bool = matches.is_present("solvable")
