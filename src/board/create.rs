@@ -21,14 +21,14 @@ pub fn snail_generate(size: i8) -> Vec<i8> {
 }
 
 // generate a game board array of a given size
-pub fn board_generate(s: i8, iterations: i8, solvable: bool) -> (i8, Vec<i8>) {
+pub fn board_generate(s: i8, iterations: i32, solvable: bool) -> (i8, Vec<i8>) {
 	/*
 	* Creates a game board
 	* @return the generated game board
 	*/
 	let mut board: Vec<i8> = snail_generate(s as i8);
 	
-	let mut i: i8 = 0;
+	let mut i: i32 = 0;
 	let mut pos: i8;
 	let mut choices: Vec<i8> = Vec::new();
 	let mut switch_index: &i8;

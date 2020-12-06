@@ -24,6 +24,7 @@ pub fn get_full_array(state: Vec<i8>, size: i8, sequence: &Vec<Dir>) -> Vec<Vec<
 
 fn main() {
 	let config = Config::new();
+	// println!("config: {:?}", config);
 	let (size, state) = handle_args(&config);
 
 	println!("size: {:?}", size);
