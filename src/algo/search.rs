@@ -12,17 +12,3 @@ impl fmt::Display for SearchType {
         write!(f, "{:?}", self)
     }
 }
-
-// pub fn search_type(search_type: &SearchType, size: i8, state: &Vec<i8>, target: &Vec<i8>) -> u32 {
-//    match search_type {
-// 	  SearchType::Normal => {
-// 		return manhattan(size, state, target);
-// 	  },
-// 	  SearchType::Greedy => {
-// 		return euclidian(size, state, target);
-// 	  },
-// 	  SearchType::Uniform => {
-// 		return hamming_distance(size, state, target);
-// 	  }
-//    }
-// }
