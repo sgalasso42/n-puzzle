@@ -15,7 +15,9 @@ fn main() {
 
 	println!("First state: {:?}", state);
 	println!("Size: {}", size);
-	println!("Iterations: {}", config.iterations);
+	if config.file.is_empty() {
+		println!("Iterations: {}", config.iterations);
+	}
 	println!("Heuristic: {:?}", config.heuristic);
 	println!("Search type: {}", config.search_type);
 
