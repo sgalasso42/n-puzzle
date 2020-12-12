@@ -1,4 +1,5 @@
 use std::fmt;
+use rulinalg::matrix::{Matrix, BaseMatrixMut, BaseMatrix};
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Heuristic {
@@ -15,19 +16,11 @@ impl fmt::Display for Heuristic {
 }
 
 pub fn heuristic(heuristic: &Heuristic, size: u16, state: &Vec<u16>, target: &Vec<u16>) -> u32 {
-   match heuristic {
-	  Heuristic::Manhattan => {
-		return manhattan(size, state, target);
-	  },
-	  Heuristic::Euclidian => {
-		return euclidian(size, state, target);
-	  },
-	  Heuristic::Hamming => {
-		return hamming_distance(size, state, target);
-	  }
-	  Heuristic::LinearConflict => {
-		return linear_conflict(size, state, target);
-	  }
+   return match heuristic {
+	  Heuristic::Manhattan => manhattan(size, state, target),
+	  Heuristic::Euclidian => euclidian(size, state, target),
+	  Heuristic::Hamming => hamming_distance(size, state, target),
+	  Heuristic::LinearConflict => linear_conflict(size, state, target)
    }
 }
 
@@ -69,48 +62,35 @@ fn hamming_distance(size: u16, state: &Vec<u16>, target: &Vec<u16>) -> u32 {
     return misplaced;
 }
 
-fn is_conflicting(tile_a: u16, target_a: u16, tile_b: u16, target_b: u16) -> bool {
-    return (tile_b > tile_a && target_b < target_a) || (tile_a > tile_b && target_a < target_b);
-}
-
-fn find_conflicting_tiles_nb_for(size: u16, tile: usize, target: usize, line: &Vec<u16>, target_line: &Vec<u16>) -> u16 {
-    let mut conflicts_nb: u16 = 0;
-    if line[tile as usize] != size * size {
-        for index in 0..size as usize {
-            let target_b = target_line.iter().position(|&x| x == line[index as usize]);
-            if target_b.is_some() {
-                if line[index] != size * size && is_conflicting(tile as u16, target as u16, index as u16, target_b.unwrap() as u16) {
-                    conflicts_nb += 1;
+fn find_conflicts(size: u16, line: &Vec<u16>, target_line: &Vec<u16>) -> Matrix<u16> {
+    let mut conflicts_matrix: Matrix<u16> = Matrix::<u16>::zeros(size as usize, size as usize);
+    for row in 0..(size as usize) {
+        if line[row] != size * size {
+            let target_a = target_line.iter().position(|&x| x == line[row]);
+            if target_a.is_some() {
+                for col in (row + 1)..(size as usize) {
+                    if line[col] != size * size {
+                        let target_b = target_line.iter().position(|&x| x == line[col]);
+                        if target_b.is_some() && target_b < target_a {
+                            conflicts_matrix.row_mut(row)[col] = 1;
+                            conflicts_matrix.row_mut(col)[row] = 1;
+                        }
+                    }
                 }
             }
         }
     }
-    return conflicts_nb;
+    return conflicts_matrix;
 }
 
 fn line_extra_moves(size: u16, line: &Vec<u16>, target_line: Vec<u16>) -> u16 {
     let mut total_conflicting_tiles: u16 = 0;
-    let mut conflicts_table: Vec<u16> = Vec::new();
-    for tile_idx in 0..size as usize {
-        let target = target_line.iter().position(|&x| x == line[tile_idx]);
-        if target.is_some() {
-            conflicts_table.push(find_conflicting_tiles_nb_for(size, tile_idx, target.unwrap(), &line, &target_line));
-        } else {
-            conflicts_table.push(0);
-        }
-    }
-    while conflicts_table.iter().sum::<u16>() > 0 {
-        let most_conflicting_tile: usize = conflicts_table.iter().position(|&x| x == *conflicts_table.iter().max().unwrap_or(&0)).unwrap_or(0);
-        conflicts_table[most_conflicting_tile] = 0;
-        for tile in 0..size as usize {
-            let target = target_line.iter().position(|&x| x == line[tile]);
-            let target_b = target_line.iter().position(|&x| x == line[most_conflicting_tile]);
-            if target.is_some() && target_b.is_some() {
-                if is_conflicting(tile as u16, target.unwrap_or(tile) as u16, most_conflicting_tile as u16, target_b.unwrap_or(most_conflicting_tile) as u16) {
-                    conflicts_table[tile] -= 1;
-                }
-            }
-        }
+    let mut conflicts_matrix: Matrix<u16> = find_conflicts(size, line, &target_line);
+    while conflicts_matrix.sum() > 0 {
+        let conflicts_table = conflicts_matrix.sum_cols();
+        let most_conflicting_tile: usize = conflicts_table.iter().position(|val| val == conflicts_table.iter().max().unwrap()).unwrap(); // handle unwrap()
+        *conflicts_matrix.row_mut(most_conflicting_tile) *= 0;
+        *conflicts_matrix.col_mut(most_conflicting_tile) *= 0;
         total_conflicting_tiles += 1;
     }
     return total_conflicting_tiles;
@@ -128,5 +108,6 @@ fn linear_conflict(size: u16, state: &Vec<u16>, target: &Vec<u16>) -> u32 {
         let target_col: Vec<u16> = target.iter().cloned().enumerate().filter(|&(i, _)| i % size as usize == col_index as usize).map(|(_, e)| e).collect();
         extra_moves += line_extra_moves(size, &col, target_col);
     }
-    return manhattan(size, state, target) + (2 * extra_moves) as u32;
+    let md = manhattan(size, state, target);
+    return md + (2 * extra_moves) as u32;
 }
