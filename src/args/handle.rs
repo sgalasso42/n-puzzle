@@ -15,8 +15,8 @@ fn load_file(file: &String) -> (u16, Vec<u16>) {
     let mut values: Vec<u16> = Vec::new();
 
     for line in lines.into_iter() {
-        let offset = line.as_ref().expect("Error: Bad file format")[..].find('#').unwrap_or(line.as_ref().unwrap().len());
-        let drained: String = line.unwrap().drain(..offset).collect();
+        let offset = line.as_ref().expect("Error: Bad file format")[..].find('#').unwrap_or(line.as_ref().expect("Error: Bad file format").len());
+        let drained: String = line.expect("Error: Bad line format").drain(..offset).collect();
         let split: Vec<_> = drained.split_whitespace().map(|s| s.to_string()).collect();
         if size > 0 && split.len() != size as usize && split.len() != 0 {
             panic!("Error: Bad map format");

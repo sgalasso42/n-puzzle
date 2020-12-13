@@ -18,6 +18,12 @@ impl Dir {
 			Dir::None => (0, 0)
 		}
 	}
+	pub fn is_horizontal(&self) -> bool {
+		return *self == Dir::W || *self == Dir::E;
+	}
+	pub fn is_vertical(&self) -> bool {
+		return !self.is_horizontal();
+	}
 }
 
 pub fn new_position(position: (u16, u16), dir: (i16, i16)) -> (u16, u16) {
@@ -53,15 +59,9 @@ fn graph_search(size: u16, path: &mut Vec<(Dir, Vec<u16>)>, target: &Vec<u16>, c
 	*explored_nodes += 1;
 	let node = path.last().expect("Error: The path is empty");
 	let new_cost: u32 = match config.search_type {
-		SearchType::Normal => {
-			cost + heuristic(&config.heuristic, size, &node.1, target)
-		},
-		SearchType::Greedy => {
-			heuristic(&config.heuristic, size, &node.1, target)
-		},
-		SearchType::Uniform => {
-			cost
-		}
+		SearchType::Normal => cost + heuristic(&config.heuristic, size, &node.1, target),
+		SearchType::Greedy => heuristic(&config.heuristic, size, &node.1, target),
+		SearchType::Uniform => cost
 	};
 	if new_cost > bound {
 		return (false, new_cost);
@@ -90,12 +90,8 @@ fn graph_search(size: u16, path: &mut Vec<(Dir, Vec<u16>)>, target: &Vec<u16>, c
 pub fn resolve_puzzle(size: u16, path: &mut Vec<(Dir, Vec<u16>)>, target: &Vec<u16>, explored_nodes: &mut u32, max_path_len: &mut u16, config: &Config) {
 	let node = path.last().expect("Error: The path has not been initialized");
 	let mut bound = match config.search_type {
-		SearchType::Normal | SearchType::Greedy => {
-			heuristic(&config.heuristic, size, &node.1, target)
-		},
-		SearchType::Uniform => {
-			0
-		}
+		SearchType::Normal | SearchType::Greedy => heuristic(&config.heuristic, size, &node.1, target),
+		SearchType::Uniform => 0
 	};
 	println!("bound: {}", bound);
 	loop {
