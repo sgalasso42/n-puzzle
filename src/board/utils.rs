@@ -29,9 +29,13 @@ pub fn get_all_states(state: Vec<u16>, size: u16, sequence: &Vec<Dir>) -> Vec<Ve
 	for pos in sequence.iter() {
 		let sd_pos: u16 = slot_pos(size, &state_updated);
 		let dd_pos: (u16, u16) = fstod(sd_pos, size);
-		let new_state: Vec<u16> = apply_action(size, &state_updated, dd_pos, new_position(dd_pos, pos.value())).unwrap();
-		board_array.push(new_state.clone());
-		state_updated = new_state.clone();
+		match apply_action(size, &state_updated, dd_pos, new_position(dd_pos, pos.value())) {
+			Ok(new_state) => {
+				board_array.push(new_state.clone());
+				state_updated = new_state.clone();
+			},
+			Err(()) => {}
+		}
 	}
 	return board_array;
 }
