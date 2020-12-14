@@ -1,5 +1,6 @@
 # n-puzzle
-A n-puzzle solver, made in Rust, working with an IDA* using admissible heuristics
+A n-puzzle solver, made in Rust, working with an IDA* using admissible heuristics<br/>
+This is a 42 school project <strong>[Final grade: 121%]</strong>
 
 ---
 ## Demo
